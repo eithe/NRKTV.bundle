@@ -7,16 +7,16 @@
   <string></string>
   <key>CFBundleIdentifier</key>
   <string>com.plexapp.plugins.nrktv</string>
-	<key>CFBundleInfoDictionaryVersion</key>
-	<string>6.0</string>
-	<key>CFBundlePackageType</key>
-	<string>AAPL</string>
-	<key>CFBundleSignature</key>
-	<string>hook</string>
-	<key>CFBundleVersion</key>
-	<string>1.0</string>
-	<key>PlexClientPlatforms</key>
-	<string>*</string>
+  <key>CFBundleInfoDictionaryVersion</key>
+  <string>6.0</string>
+  <key>CFBundlePackageType</key>
+  <string>AAPL</string>
+  <key>CFBundleSignature</key>
+  <string>hook</string>
+  <key>CFBundleVersion</key>
+  <string>1.0</string>
+  <key>PlexClientPlatforms</key>
+  <string>*</string>
   <key>PlexMediaContainer</key>
   <array>
     <string>Flash</string>
@@ -57,13 +57,13 @@
       </array>
     </dict>
   </dict>
-	<key>PlexFrameworkVersion</key>
-	<string>2</string>
-	<key>PlexPluginMode</key>
-	<string>AlwaysOn</string>
-	<key>PlexPluginConsoleLogging</key>
-	<string>1</string>
-	<key>PlexPluginDevMode</key>
-	<string>0</string>
+  <key>PlexFrameworkVersion</key>
+  <string>2</string>
+  <key>PlexPluginMode</key>
+  <string>AlwaysOn</string>
+  <key>PlexPluginConsoleLogging</key>
+  <string>1</string>
+  <key>PlexPluginDevMode</key>
+  <string>0</string>
 </dict>
 </plist>
