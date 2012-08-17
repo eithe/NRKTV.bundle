@@ -1,0 +1,55 @@
+{
+    "title": "NRK TV",
+
+    "livetv_title": "Direkte TV",
+    "livetv_description": "Direkte strømmer fra NRKs TV-kanaler.",
+
+    "webtv_title": "Nett-TV",
+    "webtv_description": "NRKs arkiv over tidligere sendte programmer.",
+
+    "empty_title": "Ingen funnet",
+    "empty_description": "Fant ingen videoer. Hvis problemet vedvarer, sjekk for oppdatering av tilegget.",
+    
+    "most_viewed_week": "Mest sett denne uken",
+    "most_viewed_week_description": "De mest sette programmene denne uken.",
+    "most_viewed_month": "Mest sett denne måneden",
+    "most_viewed_month_description": "De mest sette programmene denne måneden.",
+    "most_viewed_total": "Mest sett totalt",
+    "most_viewed_total_description": "De mest sette programmene totalt.",
+    
+    "search_title": "Søk",
+    "search_description": "Søk i programtitler og beskrivelser.",
+    
+    "prefs_title": "Innstillinger",
+    "prefs_description": "Sett opp om du ønsker undertekster.",
+    "prefs_subtitles": "Undertekster",
+    "prefs_success_title": "Vellykket",
+    "prefs_success_description": "Dine innstillinger er lagret",
+    
+    "recommended_title" : "Aktuelt",
+    "recommended_description" : "NRKs utvalgte videoer.",
+    
+    "recent_title" : "Nyeste",
+    "recent_description" : "Siste videoer lagt ut paa NRK.",
+    
+    "category_name" : "Kategori",
+    "categories_title" : "Kategori",
+    "categories_description" : "Se videoer sortert etter kategori.",
+
+    "about_title" : "Om NRK TV for Plex",
+    "about_description" : "Om dette Plex-tilegget for NRK",
+
+    "copyright_title" : "Kopirett",
+    "copyright_description" : "THE BEER-WARE LICENSE (Revision 42): <eithe@plexforums> wrote this.  As long as you retain this notice you can do whatever you want with this stuff. If we meet some day, and you think this stuff is worth it, you can buy me a beer in return. Eirik H.",
+
+    "disclaimer_title" : "Fraskrivelse",
+    "disclaimer_description" : "Dette tilegget er på ingen måte assosiert med eller forsøkt godkjent av NRK. All bruk er på egen risiko. NRK, if you are watching, please do not hesitate to make contact.",
+
+    "aboutapp_title" : "NRK TV for Plex",
+    "aboutapp_description" : "NRK TV lar deg se NRKs innhold på nett i Plex. Du kjører NRK TV for Plex v. 0.0.1. Mer informasjon: http://eiathenerd.com/plex-nrk",
+
+    "ack_title" : "Anerkjennelse",
+    "ack_description" : "Klipp og lim fra jonklos NRK.bundle + takois xbmc-addon-nrk, sjekk github. Stor takk, uten dem ingen NRK TV for Plex.",
+
+    "last_one": "true"
+}

@@ -1,0 +1,41 @@
+﻿# -*- coding: utf-8 -*-
+
+# "THE BEER-WARE LICENSE" (Revision 42):
+# <eithe@plexforums> wrote this file.  As long as you retain this notice you
+# can do whatever you want with this stuff. If we meet some day, and you think
+# this stuff is worth it, you can buy me a beer in return. Eirik H.
+
+# Some of this stuff is from:
+# jonklo's NRK Plex plugin: https://github.com/plexinc-plugins/NRK.bundle
+# takoi's NRK XBMC plugin: https://github.com/takoi/xbmc-addon-nrk
+# Please comply with their licenses, I haven't looked at them yet.
+
+# NRK, if you are watching, don't hesitate to make contact.
+
+LIVE_BASE_URL = 'http://{0}-i.akamaihd.net/hls/live/20154{2}/{1}/'
+LIVE_END_URL = '/master_Layer{0}.m3u8'
+RESOLUTIONS = ["180","SD","480","720","1080"]
+CHANNELS = ["nrk1","nrk2","nrk3"]
+
+def MetadataObjectForURL(url):
+    pass # Metadata already defined (static) ...
+    
+def MediaObjectsForURL(url):
+    channel = url.replace('http://tv.nrk.no/direkte/','')
+    channel_idx = CHANNELS.index(channel) + 3
+    video_url = LIVE_BASE_URL.format(channel,channel,channel_idx)
+    Log.Debug("NRK: Adding media object for live stream: " + video_url)
+
+    mobjects = []
+    for res in reversed(RESOLUTIONS):
+        mobjects.append(MediaObject(
+            parts = [PartObject(key=HTTPLiveStreamURL(GetStreamURL(video_url,res,channel)))],
+            video_resolution = res,
+            optimized_for_streaming = True,
+            audio_channels = 2))
+    
+    return mobjects
+ 
+def GetStreamURL(url,res,channel):
+    res_idx = RESOLUTIONS.index(res) + 1
+    return url + (LIVE_END_URL.format(res_idx))

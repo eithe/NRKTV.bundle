@@ -1,0 +1,61 @@
+﻿# -*- coding: utf-8 -*-
+
+# "THE BEER-WARE LICENSE" (Revision 42):
+# <eithe@plexforums> wrote this file.  As long as you retain this notice you
+# can do whatever you want with this stuff. If we meet some day, and you think
+# this stuff is worth it, you can buy me a beer in return. Eirik H.
+
+# Some of this stuff is from:
+# jonklo's NRK Plex plugin: https://github.com/plexinc-plugins/NRK.bundle
+# takoi's NRK XBMC plugin: https://github.com/takoi/xbmc-addon-nrk
+# Please comply with their licenses, I haven't looked at them yet.
+
+# NRK, if you are watching, don't hesitate to make contact.
+
+RESOLUTIONS = ["180","SD","480","720","1080"]
+RE_VIDEO_URL = Regex('\/program\/([^\/]+)\/([^\/]+)')
+
+def MetadataObjectForURL(url):
+    # Request the URL
+    page = HTML.ElementFromURL(url)
+
+    # Extract the details available directly form the page.
+    title = page.xpath("//meta[@name='og:title']")[0].get('content')
+    summary = page.xpath("//meta[@name='description']")[0].get('content')
+    thumb = page.xpath("//meta[@name='og:image']")[0].get('content')
+    
+    # Return an object to Plex
+    return VideoClipObject(
+        title = title,
+        summary = summary,
+        thumb = thumb)
+    
+def MediaObjectsForURL(url):
+    Log.Debug("NRK: Adding media object for program: " + url)
+    video_id = RE_VIDEO_URL.search(url).groups()[0]
+    mobjects = []
+    for res in reversed(RESOLUTIONS):
+        mobjects.append(MediaObject(
+            parts = [PartObject(key=HTTPLiveStreamURL(Callback(GetMediaURL,video_id = video_id,res = res)))],
+            video_resolution = res,
+            optimized_for_streaming = True,
+            audio_channels = 2))
+    
+    return mobjects
+
+def GetMediaURL(video_id,res):
+    url = "http://nrk.no/serum/api/video/%s" % video_id
+    res_idx = RESOLUTIONS.index(res) + 1
+    response = JSON.ObjectFromURL(url)
+    if 'mediaURL' in response:
+        max_res = response['maximumBitrateIndex']
+        if (res_idx > int(max_res)):
+            res_idx = max_res
+        
+        video_url = response['mediaURL']
+        video_url = video_url.replace('/z/', '/i/', 1)
+        video_url = video_url.rsplit('/', 1)[0]
+        video_url = video_url + '/index_%s_av.m3u8' % res_idx
+
+        Log.Debug("NRK: Sending video url to Plex for playing: " + video_url)
+        return Redirect(video_url)
