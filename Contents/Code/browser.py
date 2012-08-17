@@ -17,7 +17,7 @@ from util import *
 @route(pluginRoute('/search'))
 def SearchResults(query):
     oc = ObjectContainer()
-    search_page = HTML.ElementFromURL(BASE_URL + "sok?q=" + query + "&filter=rettigheter")
+    search_page = HTML.ElementFromURL(BASE_URL + "/sok?q=" + query + "&filter=rettigheter")
 
     items = search_page.xpath("//li[@class='listobject ']")
     for item in items:
