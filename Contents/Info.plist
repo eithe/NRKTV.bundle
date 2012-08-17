@@ -21,42 +21,6 @@
   <array>
     <string>Flash</string>
   </array>
-  <key>PlexURLServices</key>
-  <dict>
-    <key>NRK-Serie</key>
-    <dict>
-      <key>Identifier</key>
-      <string>com.plexapp.plugins.nrktv</string>
-      <key>URLPattern</key>
-      <string>http://tv\.nrk\.no/serie/.*/.*(/.*)?</string>
-      <key>TestURLs</key>
-      <array>
-        <string>http://tv.nrk.no/serie/ol-i-london-2012/mspo11120212/12-08-2012</string>
-      </array>
-    </dict>
-    <key>NRK-Program</key>
-    <dict>
-      <key>Identifier</key>
-      <string>com.plexapp.plugins.nrktv</string>
-      <key>URLPattern</key>
-      <string>http://tv\.nrk\.no/program/.*(/.*)?</string>
-      <key>TestURLs</key>
-      <array>
-        <string>http://tv.nrk.no/program/koid27004311</string>
-      </array>
-    </dict>
-    <key>NRK-Live</key>
-    <dict>
-      <key>Identifier</key>
-      <string>com.plexapp.plugins.nrktv</string>
-      <key>URLPattern</key>
-      <string>http://tv\.nrk\.no/direkte/.*</string>
-      <key>TestURLs</key>
-      <array>
-        <string>http://tv.nrk.no/direkte/nrk1</string>
-      </array>
-    </dict>
-  </dict>
   <key>PlexFrameworkVersion</key>
   <string>2</string>
   <key>PlexPluginMode</key>
