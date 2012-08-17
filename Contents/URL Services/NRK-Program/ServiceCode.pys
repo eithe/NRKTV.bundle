@@ -13,7 +13,7 @@
 # NRK, if you are watching, don't hesitate to make contact.
 
 RESOLUTIONS = ["180","SD","480","720","1080"]
-RE_VIDEO_URL = Regex('\/program\/([^\/]+)\/([^\/]+)')
+RE_VIDEO_URL = Regex('\/program\/([^\/]+)')
 
 def MetadataObjectForURL(url):
     # Request the URL
