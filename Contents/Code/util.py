@@ -12,7 +12,7 @@
 
 # NRK, if you are watching, don't hesitate to make contact.
 
-VIDEO_PREFIX = "/video/nrk"
+VIDEO_PREFIX = "/video/nrktv"
 
 NAME = unicode(L('title'))
 
