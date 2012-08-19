@@ -12,8 +12,8 @@
 
 # NRK, if you are watching, don't hesitate to make contact.
 
-LIVE_BASE_URL = 'http://{0}-i.akamaihd.net/hls/live/20154{2}/{1}/'
-LIVE_END_URL = '/master_Layer{0}.m3u8'
+LIVE_BASE_URL = 'http://%s-i.akamaihd.net/hls/live/20154%s/%s/'
+LIVE_END_URL = '/master_Layer%s.m3u8'
 RESOLUTIONS = ["180","SD","480","720","1080"]
 CHANNELS = ["nrk1","nrk2","nrk3"]
 
@@ -23,7 +23,7 @@ def MetadataObjectForURL(url):
 def MediaObjectsForURL(url):
     channel = url.replace('http://tv.nrk.no/direkte/','')
     channel_idx = CHANNELS.index(channel) + 3
-    video_url = LIVE_BASE_URL.format(channel,channel,channel_idx)
+    video_url = LIVE_BASE_URL % (channel,channel_idx,channel)
     Log.Debug("NRK: Adding media object for live stream: " + video_url)
 
     mobjects = []
@@ -38,4 +38,4 @@ def MediaObjectsForURL(url):
  
 def GetStreamURL(url,res,channel):
     res_idx = RESOLUTIONS.index(res) + 1
-    return url + (LIVE_END_URL.format(res_idx))
+    return url + (LIVE_END_URL % (res_idx))
