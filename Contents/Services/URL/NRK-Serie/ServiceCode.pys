@@ -4,6 +4,7 @@
 # <eithe@plexforums> wrote this file.  As long as you retain this notice you
 # can do whatever you want with this stuff. If we meet some day, and you think
 # this stuff is worth it, you can buy me a beer in return. Eirik H.
+# This version of the plugin is modified by Erling Brandvik (burnbay@plexforum)
 
 # Some of this stuff is from:
 # jonklo's NRK Plex plugin: https://github.com/plexinc-plugins/NRK.bundle
@@ -12,17 +13,16 @@
 
 # NRK, if you are watching, don't hesitate to make contact.
 
-RESOLUTIONS = ["180","SD","480","720","1080"]
+RESOLUTIONS = ["240","480","720","1080"]
 RE_VIDEO_URL = Regex('\/serie\/([^\/]+)\/([^\/]+)')
 
 def MetadataObjectForURL(url):
- 
     # Request the URL
     page = HTML.ElementFromURL(url)
-    # Extract the details available directly form the page.
-    title = page.xpath("//meta[@name='og:title']")[0].get('content')
+    # Extract the details available directly from the page.
+    title = page.xpath("//meta[@name='title']")[0].get('content')
     summary = page.xpath("//meta[@name='description']")[0].get('content')
-    thumb = page.xpath("//meta[@name='og:image']")[0].get('content')
+    thumb = page.xpath("//*[@id='episode2']/div/img")[0].get('src')
  
     return VideoClipObject(
         title = title,
@@ -30,7 +30,7 @@ def MetadataObjectForURL(url):
         thumb = thumb)
 
 def MediaObjectsForURL(url):
-    Log.Debug("NRK: Adding media object for serie: " + url)
+    #Log.Debug("NRK: Adding media object for serie: " + url)
     video_id = RE_VIDEO_URL.search(url).groups()[1]
     mobjects = []
     for res in reversed(RESOLUTIONS):

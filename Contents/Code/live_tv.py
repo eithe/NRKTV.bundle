@@ -18,7 +18,7 @@ LIVE_TV_STATIONS = (
     {
         'title': 'NRK 1', 
         'url': 'http://tv.nrk.no/direkte/nrk1',
-        'desc': u'Bredt og variert programtilbud. Norges st??rste tv-kanal.', 
+        'desc': u'Bredt og variert programtilbud. Norges største tv-kanal.', 
         'img': 'nrk1.png'
     },
     {

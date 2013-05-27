@@ -4,6 +4,7 @@
 # <eithe@plexforums> wrote this file.  As long as you retain this notice you
 # can do whatever you want with this stuff. If we meet some day, and you think
 # this stuff is worth it, you can buy me a beer in return. Eirik H.
+# This version of the plugin is modified by Erling Brandvik (burnbay@plexforum)
 
 # Some of this stuff is from:
 # jonklo's NRK Plex plugin: https://github.com/plexinc-plugins/NRK.bundle
@@ -12,30 +13,76 @@
 
 # NRK, if you are watching, don't hesitate to make contact.
 
-LIVE_BASE_URL = 'http://%s-i.akamaihd.net/hls/live/20154%s/%s/'
-LIVE_END_URL = '/master_Layer%s.m3u8'
-RESOLUTIONS = ["180","SD","480","720","1080"]
-CHANNELS = ["nrk1","nrk2","nrk3"]
+#http://nrk1us-f.akamaihd.net/i/nrk1us_0@79328/index_%s_av-p.m3u8?sd=10&rebase=on
+#http://nrk2us-f.akamaihd.net/i/nrk2us_0@79327/index_%s_av-p.m3u8?sd=10&rebase=on
+#http://nrk3us-f.akamaihd.net/i/nrk3us_0@79326/index_%s_av-p.m3u8?sd=10&rebase=on
+
+#http://nrk1-i.akamaihd.net/hls/live/201543/nrk1/master.m3u8
+#http://nrk2-i.akamaihd.net/hls/live/201544/nrk2/master.m3u8
+#http://nrk3-i.akamaihd.net/hls/live/201545/nrk3/master.m3u8
+
+#LIVE_URL = 'http://%sus-f.akamaihd.net/i/%sus_0@%s/' #'http://%s-i.akamaihd.net/hls/live/20154%s/%s/'
+LIVE_URL = 'http://%s-i.akamaihd.net/hls/live/20154%s/%s/master.m3u8'
+LIVE_END_URL = 'index_%s_av-p.m3u8?sd=10&rebase=on'
+#CHANNELS = {'nrk1': 79328, 'nrk2': 79327, 'nrk3': 79326}
+CHANNELS = {'nrk1': 3, 'nrk2': 4, 'nrk3': 5}
+BITRATES = ['1080'] #['380','659','1394','2410','3660']
+LIVE_TV_STATIONS = (
+    {
+        'title': 'NRK 1', 
+        'url': 'http://tv.nrk.no/direkte/nrk1',
+        'desc': u'Bredt og variert programtilbud. Norges største tv-kanal.', 
+        'img': 'nrk1.png'
+    },
+    {
+        'title': 'NRK 2', 
+        'url': 'http://tv.nrk.no/direkte/nrk2',
+        'desc': u'Fordypningskanalen. Bakgrunns-, dokumentar og nyhetskanal.', 
+        'img': 'nrk2.png'
+    }, 
+    {
+        'title': 'NRK Super / NRK 3', 
+        'url': 'http://tv.nrk.no/direkte/nrk3',
+        'desc': u'Den tredje kanalen tilbyr vekselsvis et barnetilbud og et tilbud for unge voksne med serier, humor film.', 
+        'img': 'nrk3.png'
+    }
+)
 
 def MetadataObjectForURL(url):
-    pass # Metadata already defined (static) ...
+    channel = url.replace('http://tv.nrk.no/direkte/','')
+    if channel == 'nrk1':
+        station = LIVE_TV_STATIONS[0]
+    elif channel == 'nrk2':
+        station = LIVE_TV_STATIONS[1]
+    else:
+        station = LIVE_TV_STATIONS[2]
+    
+    title = station['title']
+    summary = station['desc']
+    thumb = R(station['img'])
+    
+    return VideoClipObject(
+        title = title,
+        summary = summary,
+        thumb = thumb)
+    
+    oc.add(VideoClipObject(url = url, )) 
     
 def MediaObjectsForURL(url):
     channel = url.replace('http://tv.nrk.no/direkte/','')
-    channel_idx = CHANNELS.index(channel) + 3
-    video_url = LIVE_BASE_URL % (channel,channel_idx,channel)
-    Log.Debug("NRK: Adding media object for live stream: " + video_url)
+    channelId = CHANNELS[channel]
+    video_url = LIVE_URL % (channel,channelId,channel)
 
     mobjects = []
-    for res in reversed(RESOLUTIONS):
+    for res in reversed(BITRATES):
+        #liveurl = (video_url + LIVE_END_URL % res)
+        liveurl = (video_url)
+        Log.Debug("NRK: Adding media object for live stream: " + liveurl)
         mobjects.append(MediaObject(
-            parts = [PartObject(key=HTTPLiveStreamURL(GetStreamURL(video_url,res,channel)))],
+            parts = [PartObject(key=HTTPLiveStreamURL(liveurl))],
             video_resolution = res,
             optimized_for_streaming = True,
             audio_channels = 2))
     
     return mobjects
  
-def GetStreamURL(url,res,channel):
-    res_idx = RESOLUTIONS.index(res) + 1
-    return url + (LIVE_END_URL % (res_idx))

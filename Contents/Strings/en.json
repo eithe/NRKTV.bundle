@@ -29,12 +29,18 @@
     "recommended_title" : "Aktuelt",
     "recommended_description" : "NRKs utvalgte videoer.",
     
+    "popular_title" : "Populært",
+    "popular_description" : "Populære videoer.",
+
     "recent_title" : "Nyeste",
     "recent_description" : "Siste videoer lagt ut på NRK.",
     
     "category_name" : "Kategori",
     "categories_title" : "Kategori",
     "categories_description" : "Se videoer sortert etter kategori.",
+
+    "letters_title" : "A-Å",
+    "letters_description" : "Se videoer etter bokstav.",
 
     "about_title" : "Om NRK TV for Plex",
     "about_description" : "Om dette Plex-tilegget for NRK",

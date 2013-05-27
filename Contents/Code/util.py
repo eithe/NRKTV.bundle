@@ -4,6 +4,7 @@
 # <eithe@plexforums> wrote this file.  As long as you retain this notice you
 # can do whatever you want with this stuff. If we meet some day, and you think
 # this stuff is worth it, you can buy me a beer in return. Eirik H.
+# This version of the plugin is modified by Erling Brandvik (burnbay@plexforum)
 
 # Some of this stuff is from:
 # jonklo's NRK Plex plugin: https://github.com/plexinc-plugins/NRK.bundle
@@ -17,7 +18,8 @@ VIDEO_PREFIX = "/video/nrktv"
 NAME = unicode(L('title'))
 
 BASE_URL = "http://tv.nrk.no"
-RESOLUTIONS = ["180","SD","480","720","1080"]
+BASE_TOOLTIP_URL = BASE_URL + "/programtooltip/"
+RESOLUTIONS = ["180","240","480","720","1080"]
 # make sure to replace artwork with what you want
 # these filenames reference the example files in
 # the Contents/Resources/ folder in the bundle

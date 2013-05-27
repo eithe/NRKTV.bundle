@@ -4,6 +4,7 @@
 # <eithe@plexforums> wrote this file.  As long as you retain this notice you
 # can do whatever you want with this stuff. If we meet some day, and you think
 # this stuff is worth it, you can buy me a beer in return. Eirik H.
+# This version of the plugin is modified by Erling Brandvik (burnbay@plexforum)
 
 # Some of this stuff is from:
 # jonklo's NRK Plex plugin: https://github.com/plexinc-plugins/NRK.bundle
@@ -43,6 +44,12 @@ def MainMenu():
         summary=unicode(L('livetv_description')), 
         thumb=R('nrk-nett-tv.png')))
 
+    oc.add(DirectoryObject(
+        key = Callback(LettersMenu),
+        title=unicode(L('letters_title')), 
+        summary=unicode(L('letters_description')), 
+        thumb=R('nrk-nett-tv.png')))
+
     oc.add(InputDirectoryObject(
         key = Callback(SearchResults),
         title = unicode(unicode(L("search_title"))) ,
@@ -54,6 +61,12 @@ def MainMenu():
         key = Callback(RecommendedMenu),
         title=unicode(L('recommended_title')), 
         summary=unicode(L('recommended_description')), 
+        thumb=R('nrk-nett-tv.png')))
+
+    oc.add(DirectoryObject(
+        key = Callback(PopularCategories),
+        title=unicode(L('popular_title')), 
+        summary=unicode(L('popular_description')), 
         thumb=R('nrk-nett-tv.png')))
 
     oc.add(DirectoryObject(
