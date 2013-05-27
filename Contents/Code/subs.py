@@ -12,34 +12,35 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
-
+import os
 import re
-from data import xhrsession as requests
 
 def get_subtitles(video_id):
-  html = HTML.ElementFromURL("http://tv.nrk.no/programsubtitles/%s" % video_id).text
+  #Log.Debug("Subtitles URL: " + "http://tv.nrk.no/programsubtitles/%s" % video_id)
+  html = XML.ElementFromURL("http://tv.nrk.no/programsubtitles/%s" % video_id).text
   if not html:
     return None
-  
+  Log.Debug("HTML subtitles: " + html)
   filename = 'nrk.srt'
-  with open(filename, 'w') as f:
-    parts = re.compile(r'<p begin="(.*?)" dur="(.*?)".*?>(.*?)</p>',re.DOTALL).findall(html)
-    i = 0
-    for begint, dur, contents in parts:
-      begin = _stringToTime(begint)
-      dur = _stringToTime(dur)
-      end = begin+dur
-      i += 1
-      f.write(str(i))
-      f.write('\n%s' % _timeToString(begin))
-      f.write(' --> %s\n' % _timeToString(end))
-      f.write(re.sub('<br />\s*','\n',' '.join(contents.replace('<span style="italic">','<i>').replace('</span>','</i>').split())).encode('utf-8'))
-      f.write('\n\n')
-  return filename
+  #with open(filename, 'w') as f:
+  parts = re.compile(r'<p begin="(.*?)" dur="(.*?)".*?>(.*?)</p>',re.DOTALL).findall(html)
+  i = 0
+  for begint, dur, contents in parts:
+    begin = stringToTime(begint)
+    dur = stringToTime(dur)
+    end = begin+dur
+    Log.Debug("Begin: " + begin + ", dur: " + dur + ", end: " + end)
+    i += 1
+  #    f.write(str(i))
+  #    f.write('\n%s' % timeToString(begin))
+  #    f.write(' --> %s\n' % timeToString(end))
+  #    f.write(re.sub('<br />\s*','\n',' '.join(contents.replace('<span style="italic">','<i>').replace('</span>','</i>').split())).encode('utf-8'))
+  #    f.write('\n\n')
+  #return filename
 
-def _stringToTime(txt):
+def stringToTime(txt):
   p = txt.split(':')
   return int(p[0])*3600+int(p[1])*60+float(p[2])
 
-def _timeToString(time):
+def timeToString(time):
   return '%02d:%02d:%02d,%03d' % (time/3600,(time%3600)/60,time%60,(time%1)*1000)

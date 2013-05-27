@@ -17,15 +17,15 @@
 #http://nrk2us-f.akamaihd.net/i/nrk2us_0@79327/index_%s_av-p.m3u8?sd=10&rebase=on
 #http://nrk3us-f.akamaihd.net/i/nrk3us_0@79326/index_%s_av-p.m3u8?sd=10&rebase=on
 
-#http://nrk1-i.akamaihd.net/hls/live/201543/nrk1/master.m3u8
-#http://nrk2-i.akamaihd.net/hls/live/201544/nrk2/master.m3u8
-#http://nrk3-i.akamaihd.net/hls/live/201545/nrk3/master.m3u8
+#http://nrk1-i.akamaihd.net/hls/live/213271/nrk1/master.m3u8
+#http://nrk2-i.akamaihd.net/hls/live/213272/nrk2/master.m3u8
+#http://nrk3-i.akamaihd.net/hls/live/213273/nrk3/master.m3u8
 
 #LIVE_URL = 'http://%sus-f.akamaihd.net/i/%sus_0@%s/' #'http://%s-i.akamaihd.net/hls/live/20154%s/%s/'
-LIVE_URL = 'http://%s-i.akamaihd.net/hls/live/20154%s/%s/master.m3u8'
+LIVE_URL = 'http://%s-i.akamaihd.net/hls/live/21327%s/%s/master.m3u8'
 LIVE_END_URL = 'index_%s_av-p.m3u8?sd=10&rebase=on'
 #CHANNELS = {'nrk1': 79328, 'nrk2': 79327, 'nrk3': 79326}
-CHANNELS = {'nrk1': 3, 'nrk2': 4, 'nrk3': 5}
+CHANNELS = {'nrk1': 1, 'nrk2': 2, 'nrk3': 3}
 BITRATES = ['1080'] #['380','659','1394','2410','3660']
 LIVE_TV_STATIONS = (
     {

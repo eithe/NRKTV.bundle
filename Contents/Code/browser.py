@@ -14,38 +14,34 @@
 # NRK, if you are watching, don't hesitate to make contact.
 
 from util import *
+#from subs import *
 import httplib, urllib
    
 PROGRAM_URL = Regex('\/program\/([^\/]+)')
 PROGRAM_METADATA_BASE_URL = 'http://nrk.no/serum/api/video/%s'
 PROGRAM_IMAGE_BASE_URL = 'http://nrk.eu01.aws.af.cm/f/%s'
-PROGRAM_LETTER_BASE_URL = 'http://tv.nrk.no/programmer/%s?filter=rettigheter&ajax=true'
-JSON_URL_RECENT = 'http://tv.nrk.no/listobjects/recentlysent.json/page'
-JSON_URL_POPULAR_WEEK = 'http://tv.nrk.no/listobjects/mostpopular/Week.json/page'
-JSON_URL_POPULAR_MONTH = 'http://tv.nrk.no/listobjects/mostpopular/Month.json/page'
+PROGRAM_LETTER_BASE_URL = BASE_URL + '/programmer/%s?filter=rettigheter&ajax=true'
+JSON_URL_RECENT = BASE_URL + '/listobjects/recentlysent.json/page'
+JSON_URL_POPULAR_WEEK = BASE_URL + '/listobjects/mostpopular/Week.json/page'
+JSON_URL_POPULAR_MONTH = BASE_URL + '/listobjects/mostpopular/Month.json/page'
 
 @route(pluginRoute('/search'))
 def SearchResults(query):
     oc = ObjectContainer()
-    search_page = HTML.ElementFromURL(BASE_URL + "/sok?q=" + query + "&filter=rettigheter")
-
-    items = search_page.xpath("//li[@class='listobject ']")
+    search_page = HTML.ElementFromURL(BASE_URL + "/sok?q=" + query.replace(" ", "%20") + "&filter=rettigheter")
+    items = search_page.xpath("//*[@id='searchResult']/ul/li/div/a")
     for item in items:
-        title = item.xpath(".//span[@class='listobject-title']/strong")[0].text
-        url = item.xpath(".//a")[0].get('href')
-        image = item.xpath(".//a/img")[0].get('src')
-        summary = item.xpath(".//p/text()")[1].strip()
-        # [Optional] - The subtitle
-        tagline = None
-        try: tagline = String.StripTags(item.xpath(".//div[@class='stack-links']//a/text()")[0]) 
-        except: pass
-
-        oc.add(VideoClipObject(
-            url = url,
+        title = item.xpath("./span/strong")[0].text
+        url = item.get('href')
+        if '/program/' in url:
+            oc.add(VideoClipInformation(url))
+        else:
+            #http://tv.nrk.no/serie/ekstremsportveko
+            seriesName = url.split('/')[4]
+            oc.add(DirectoryObject(
+            key = Callback(SeriesMenu, url = url),
             title = title,
-            summary = summary,
-            tagline = tagline, 
-            thumb = image))
+            thumb = PROGRAM_IMAGE_BASE_URL % seriesName))
     return oc
 
 @route(pluginRoute('/recommended'))
@@ -209,12 +205,19 @@ def LettersMenu():
     #http://tv.nrk.no/programmer/a?filter=rettigheter&ajax=true
     oc = ObjectContainer()
 
-    common = ['0-9'] + map(chr, range(97, 123))
-    letters = common + [ u'æ', u'ø', u'å' ]
-    letters = [ e.upper() for e in letters ]
+    common = ['0-9'] + map(chr, range(65, 91))
+    letters = common + [ u'Æ', u'Ø', u'Å' ]
 
     for letter in letters:
-        url = PROGRAM_LETTER_BASE_URL % letter
+        if letter == u'Æ':
+            url = PROGRAM_LETTER_BASE_URL % "AE"
+        elif letter == u'Ø':
+            url = PROGRAM_LETTER_BASE_URL % "OE"
+        elif letter == u'Å':
+            url = PROGRAM_LETTER_BASE_URL % "AA"
+        else:
+            url = PROGRAM_LETTER_BASE_URL % letter
+        
         oc.add(DirectoryObject(
             key = Callback(LetterMenu, url = url),
             title = letter))
@@ -273,7 +276,8 @@ def VideoClipInformation(url):
     image = imageURL
     
     #Log.Debug("NRK: title: " + title + ", Summary: " + summary + ", Image: " + image)
-
+    #subtitles = get_subtitles(programId)
+    
     vc = VideoClipObject(
         url = url,
         title = title,
