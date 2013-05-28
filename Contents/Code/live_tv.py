@@ -1,9 +1,9 @@
 ﻿# -*- coding: utf-8 -*-
 
 # "THE BEER-WARE LICENSE" (Revision 42):
-# <eithe@plexforums> wrote this file.  As long as you retain this notice you
-# can do whatever you want with this stuff. If we meet some day, and you think
-# this stuff is worth it, you can buy me a beer in return. Eirik H.
+# eithe and burnbay @plexforums wrote this file.  As long as you retain this
+# notice you can do whatever you want with this stuff. If we meet some day,
+# and you think this stuff is worth it, you can buy us a beer in return. Eirik H.
 
 # Some of this stuff is from:
 # jonklo's NRK Plex plugin: https://github.com/plexinc-plugins/NRK.bundle
