@@ -17,7 +17,7 @@
 #http://nrk3us-f.akamaihd.net/i/nrk3us_0@107233/master.m3u8?dw=31
 
 #LIVE_URL = 'http://%sus-f.akamaihd.net/i/%sus_0@%s/' #'http://%s-i.akamaihd.net/hls/live/20154%s/%s/'
-LIVE_URL = 'http://%s-f.akamaihd.net/i/%sus_0@%s/master.m3u8?dw=31'
+LIVE_URL = 'http://%sus-f.akamaihd.net/i/%sus_0@%s/master.m3u8?dw=31'
 LIVE_END_URL = 'index_%s_av-p.m3u8?sd=10&rebase=on'
 #CHANNELS = {'nrk1': 79328, 'nrk2': 79327, 'nrk3': 79326}
 CHANNELS = {'nrk1': 102847, 'nrk2': 107231, 'nrk3': 107233}
