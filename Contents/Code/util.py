@@ -12,13 +12,14 @@
 
 # NRK, if you are watching, don't hesitate to make contact.
 
+import re
+
 VIDEO_PREFIX = "/video/nrktv"
 
 NAME = unicode(L('title'))
 
 BASE_URL = "http://tv.nrk.no"
-BASE_TOOLTIP_URL = BASE_URL + "/programtooltip/"
-RESOLUTIONS = ["180","240","480","720","1080"]
+MEDIAELEMENT_URL_JSON = 'http://v7.psapi.nrk.no/mediaelement/%s'
 # make sure to replace artwork with what you want
 # these filenames reference the example files in
 # the Contents/Resources/ folder in the bundle
@@ -38,3 +39,54 @@ def emptyItem():
             title=unicode(L("empty_title")),
             summary=unicode(L("empty_description")),
             thumb='')
+            
+def JSONList(url):
+    elems = JSON.ObjectFromURL(url)['Data']
+
+    titles = [ e['Title'] for e in elems ]
+    urls = [ BASE_URL + e['Url'] for e in elems ]
+    thumbs = [ e['Images'][0]['ImageUrl'] for e in elems ]
+    fanarts = [ FanartURL(e['Url']) for e in elems ]
+    summaries = [ GetSummary(e['Url']) for e in elems ]
+    return titles, urls, thumbs, fanarts, summaries
+
+def ProgramList(url):    
+    httpRequest = HTTP.Request(url = url, headers = {'X-Requested-With':'XMLHttpRequest'})
+    #Log.Debug(httpRequest.content)
+    items = JSON.ObjectFromString(httpRequest.content)
+    items = [ i for i in items if i['hasOndemandRights'] ]
+    titles = []
+    urls = []
+    thumbs = []
+    fanarts = []
+    summaries = []
+    for item in items:
+        titles.append(item['Title'])
+        urls.append(BASE_URL + item['Url'])
+        thumbs.append(item['ImageUrl'])
+        fanarts.append(FanartURL(url))
+        summaries.append(item['Title'])
+  
+    return titles, urls, thumbs, fanarts, summaries
+
+def FanartURL(url):
+    if '/serie/' in url:
+        return "http://nrk.eu01.aws.af.cm/f/%s" % url.lstrip('/')
+    else:
+        return ''
+    
+def ThumbURL(url):
+    return "http://nrk.eu01.aws.af.cm/t/%s" % url.lstrip('/')
+
+# Too slow at the moment. Needs caching
+def GetSummary(url):
+    return ''
+    matchObj = re.search( r'\w{4}\d{8}', url, re.M|re.I)
+    if matchObj:
+        metaurl = "http://v7.psapi.nrk.no/mediaelement/%s" % matchObj.group()
+        try:
+            return JSON.ObjectFromURL(metaurl)['description']
+        except:
+            return ''
+    else:
+        return ''

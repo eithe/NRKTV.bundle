@@ -16,11 +16,7 @@
 #http://nrk2us-f.akamaihd.net/i/nrk2us_0@107231/master.m3u8?dw=31
 #http://nrk3us-f.akamaihd.net/i/nrk3us_0@107233/master.m3u8?dw=31
 
-#LIVE_URL = 'http://%sus-f.akamaihd.net/i/%sus_0@%s/' #'http://%s-i.akamaihd.net/hls/live/20154%s/%s/'
-LIVE_URL = 'http://%sus-f.akamaihd.net/i/%sus_0@%s/master.m3u8?dw=31'
-LIVE_END_URL = 'index_%s_av-p.m3u8?sd=10&rebase=on'
-#CHANNELS = {'nrk1': 79328, 'nrk2': 79327, 'nrk3': 79326}
-CHANNELS = {'nrk1': 102847, 'nrk2': 107231, 'nrk3': 107233}
+LIVE_URL_JSON = 'http://v7.psapi.nrk.no/mediaelement/%s'
 BITRATES = ['1080'] #['380','659','1394','2410','3660']
 LIVE_TV_STATIONS = (
     {
@@ -61,16 +57,16 @@ def MetadataObjectForURL(url):
         summary = summary,
         thumb = thumb)
     
-    oc.add(VideoClipObject(url = url, )) 
+    oc.add(VideoClipObject(url = url, summary=summary, thumb=thumb)) 
     
 def MediaObjectsForURL(url):
     channel = url.replace('http://tv.nrk.no/direkte/','')
-    channelId = CHANNELS[channel]
-    video_url = LIVE_URL % (channel,channel,channelId)
-
+    Log.Debug("LIVE JSON: " + LIVE_URL_JSON % channel)
+    video_url = JSON.ObjectFromURL(LIVE_URL_JSON % channel, headers={'Cookie':'NRK_PLAYER_SETTINGS_TV=devicetype=desktop&preferred-player-odm=hlslink&preferred-player-live=hlslink'})['mediaUrl']
+    #video_url = JSON.ObjectFromURL(LIVE_URL_JSON % channel)['mediaUrl']
+    Log.Debug("LIVE: " + video_url)
     mobjects = []
     for res in reversed(BITRATES):
-        #liveurl = (video_url + LIVE_END_URL % res)
         liveurl = (video_url)
         Log.Debug("NRK: Adding media object for live stream: " + liveurl)
         mobjects.append(MediaObject(

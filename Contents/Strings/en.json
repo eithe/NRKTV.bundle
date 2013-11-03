@@ -31,6 +31,10 @@
     
     "popular_title" : "Populært",
     "popular_description" : "Populære videoer.",
+    "popular_title_week" : "Sist uke",
+    "popular_description_week" : "Populære videoer den siste uken",
+    "popular_title_month" : "Sist måned",
+    "popular_description_month" : "Populære videoer den siste måneden",
 
     "recent_title" : "Nyeste",
     "recent_description" : "Siste videoer lagt ut på NRK.",

@@ -12,7 +12,7 @@
 
 # NRK, if you are watching, don't hesitate to make contact.
 
-RESOLUTIONS = ["240","480","720","1080"]
+RESOLUTIONS = ["1080"]
 RE_VIDEO_URL = Regex('\/serie\/([^\/]+)\/([^\/]+)')
 
 def MetadataObjectForURL(url):
@@ -34,26 +34,32 @@ def MediaObjectsForURL(url):
     mobjects = []
     for res in reversed(RESOLUTIONS):
         mobjects.append(MediaObject(
-            parts = [PartObject(key=HTTPLiveStreamURL(Callback(GetMediaURL,video_id = video_id,res = res)))],
+            parts = [PartObject(key=HTTPLiveStreamURL(Callback(GetMediaURL,video_id = video_id)))],
             video_resolution = res,
             optimized_for_streaming = True,
             audio_channels = 2))
     
     return mobjects
 
-def GetMediaURL(video_id,res):
-    url = "http://nrk.no/serum/api/video/%s" % video_id
-    res_idx = RESOLUTIONS.index(res) + 1
-    response = JSON.ObjectFromURL(url)
-    if 'mediaURL' in response:
-        max_res = response['maximumBitrateIndex']
-        if (res_idx > int(max_res)):
-            res_idx = max_res
-        
-        video_url = response['mediaURL']
-        video_url = video_url.replace('/z/', '/i/', 1)
-        video_url = video_url.rsplit('/', 1)[0]
-        video_url = video_url + '/index_%s_av.m3u8' % res_idx
+#def GetMediaURL(video_id,res):
+#    url = "http://nrk.no/serum/api/video/%s" % video_id
+#    res_idx = RESOLUTIONS.index(res) + 1
+#    response = JSON.ObjectFromURL(url)
+#    if 'mediaURL' in response:
+#        max_res = response['maximumBitrateIndex']
+#        if (res_idx > int(max_res)):
+#            res_idx = max_res
+#        
+#        video_url = response['mediaURL']
+#        video_url = video_url.replace('/z/', '/i/', 1)
+#        video_url = video_url.rsplit('/', 1)[0]
+#        video_url = video_url + '/index_%s_av.m3u8' % res_idx
+#
+#        Log.Debug("NRK: Sending video url to Plex for playing: " + video_url)
+#        return Redirect(video_url)
 
-        Log.Debug("NRK: Sending video url to Plex for playing: " + video_url)
-        return Redirect(video_url)
+def GetMediaURL(video_id):
+    mediaMetadataUrl = "http://v7.psapi.nrk.no/mediaelement/%s" % video_id
+    mediaUrl = JSON.ObjectFromURL(mediaMetadataUrl)['mediaUrl']
+    Log.Debug("MEDIA URL: " + mediaUrl)
+    return Redirect(mediaUrl.replace('/z/', '/i/').replace('manifest.f4m', 'master.m3u8'))
