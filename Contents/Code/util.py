@@ -70,14 +70,27 @@ def ProgramList(url):
     return titles, urls, thumbs, fanarts, summaries
 
 def FanartURL(url):
+    fUrl = url.replace(BASE_URL, '')
     if '/serie/' in url:
-        return "http://nrk.eu01.aws.af.cm/f/%s" % url.lstrip('/')
+        fUrl = "http://nrk.eu01.aws.af.cm/f/%s" % url.lstrip('/')
+    elif '/Episodes/' in url:
+        fUrl = "http://nrk.eu01.aws.af.cm/f/%s" % url.split('/')[3]
     else:
-        return ''
+        fUrl = ''
+    
+    Log.Debug("FANART URL: " + fUrl)    
+    return fUrl
     
 def ThumbURL(url):
-    return "http://nrk.eu01.aws.af.cm/t/%s" % url.lstrip('/')
+    tUrl = url.replace(BASE_URL, '')
+    if '/Episodes/' in url:
+        tUrl = "http://nrk.eu01.aws.af.cm/t/%s" % url.split('/')[3]
+    else:
+        tUrl = "http://nrk.eu01.aws.af.cm/t/%s" % url.lstrip('/')
 
+    Log.Debug("THUMB URL: " + tUrl)
+    return tUrl
+    
 # Too slow at the moment. Needs caching
 def GetSummary(url):
     return ''

@@ -32,7 +32,7 @@ def Start():
     EpisodeObject.thumb = R(ICON_DEFAULT)
 
     #HTTP.CacheTime = CACHE_1HOUR
-    HTTP.Headers['X-Requested-With'] = 'XMLHttpRequest'
+    #HTTP.Headers['X-Requested-With'] = 'XMLHttpRequest'
     HTTP.Headers['Cookie'] = 'NRK_PLAYER_SETTINGS_TV=devicetype=desktop&preferred-player-odm=hlslink&preferred-player-live=hlslink'
     
 def MainMenu():
@@ -158,6 +158,10 @@ def Series(url):
     import data
     return View(*data.GetSeasons(url))
 
+@route(pluginRoute('/series/{x}'))
+def Episodes(url): 
+    import data
+    return View(*data.GetEpisodes(url))
 
 @route(pluginRoute('/letter/{x}'))
 def Letter(letterUrl):
@@ -168,18 +172,25 @@ def Letter(letterUrl):
 def View(titles, urls, thumbs=repeat(''), fanarts=repeat(''), summaries=repeat('')):
     oc = ObjectContainer()
     total = len(titles)
+    if total == 0:
+        oc.add(emptyItem())
     for title, url, thumb, fanart, summary in zip(titles, urls, thumbs, fanarts, summaries):
         #Log.Debug("NRK - url: " + url)
         summary = summary() if callable(summary) else summary
         thumb = thumb() if callable(thumb) else thumb
         fanart = fanart() if callable(fanart) else fanart
         
-        if '/program/' in url or re.search( r'/\w{4}\d{8}/', url, re.M|re.I): #koid24002713 Playable:
+        if '/Episodes/' in url:
+            Log.Debug("Episodes: " + url)
+            oc.add(DirectoryObject(
+            key = Callback(Episodes, url = url), title = title, thumb = thumb, art = fanart))
+        elif '/program/' in url or re.search( r'/\w{4}\d{8}/', url, re.M|re.I): #koid24002713 Playable:
             Log.Debug("Program: " + url)
             oc.add(VideoClipObject(url = url, title = title, thumb = thumb, art = fanart, summary = summary))
         else:
+            Log.Debug("Series: " + url)
             oc.add(DirectoryObject(
-            key = Callback(Series, url = url), title = title))
+            key = Callback(Series, url = url), title = title, thumb = thumb, art = fanart))
         
     return oc
     

@@ -16,7 +16,6 @@
 import re
 
 RESOLUTIONS = ["1080"]
-RE_VIDEO_URL = Regex('\/program\/([^\/]+)')
 
 def MetadataObjectForURL(url):
     # Request the URL
@@ -34,7 +33,7 @@ def MetadataObjectForURL(url):
     
 def MediaObjectsForURL(url):
     #Log.Debug("NRK: Adding media object for program: " + url)
-    video_id = RE_VIDEO_URL.search(url).groups()[0]
+    video_id = re.search( r'\w{4}\d{8}', url, re.M|re.I).group()
     mobjects = []
     for res in reversed(RESOLUTIONS):
         mobjects.append(MediaObject(

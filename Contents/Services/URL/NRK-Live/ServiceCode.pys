@@ -64,11 +64,11 @@ def MediaObjectsForURL(url):
     Log.Debug("LIVE JSON: " + LIVE_URL_JSON % channel)
     video_url = JSON.ObjectFromURL(LIVE_URL_JSON % channel, headers={'Cookie':'NRK_PLAYER_SETTINGS_TV=devicetype=desktop&preferred-player-odm=hlslink&preferred-player-live=hlslink'})['mediaUrl']
     #video_url = JSON.ObjectFromURL(LIVE_URL_JSON % channel)['mediaUrl']
-    Log.Debug("LIVE: " + video_url)
+    #Log.Debug("LIVE: " + video_url)
     mobjects = []
     for res in reversed(BITRATES):
         liveurl = (video_url)
-        Log.Debug("NRK: Adding media object for live stream: " + liveurl)
+        #Log.Debug("NRK: Adding media object for live stream: " + liveurl)
         mobjects.append(MediaObject(
             parts = [PartObject(key=HTTPLiveStreamURL(liveurl))],
             video_resolution = res,
