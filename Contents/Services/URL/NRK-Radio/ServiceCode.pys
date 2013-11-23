@@ -12,37 +12,33 @@
 
 # NRK, if you are watching, don't hesitate to make contact.
 
+LIVE_RADIO_QUALITIES = ['h','m','l'] # h (high), m (medium) or l (low)
 BITRATES = [32,92,192]
+
+LIVE_RADIO_CODECS = ['mp3','aac']
 CODECS = [AudioCodec.MP3,AudioCodec.AAC]
 
-def MetadataObjectForURL(url):
-    return TrackObject(
-        title = "Test",
-        summary = "summary",
-        thumb = "")
-    
+#def MetadataObjectForURL(url):
+#    return TrackObject(
+#        title = "Test",
+#        summary = "summary",
+#        thumb = "")
+#
 def MediaObjectsForURL(url):
-    Log.Debug("NRK: Adding single mp3 192 media object for live radio stream: " + url)
+    Log.Debug("NRK: Adding media object for live radio stream: " + url)
 
     mobjects = []
     
-    mObj = MediaObject(
-          parts = [PartObject(key=Callback(PlayRadio,url = url, ext='mp3'))],
-          audio_codec = AudioCodec.MP3,
-          bitrate = 192)
-    mobjects.append(mObj)
-        
-#    for bitrate in BITRATES:
-#      for codec in CODECS:
-#        mObj = MediaObject(
-#          parts = [PartObject(key=Callback(PlayRadio,url = url, ext='mp3'))],
-#          audio_codec = codec,
-#          bitrate = bitrate)
-#        mobjects.append(mObj)
-#        Log.Debug("NRK: Adding MediaObject for codec: " + codec + " and bitrate: " + bitrate)
+    for bIndex, bitrate in enumerate(BITRATES):
+      for cIndex, codec in enumerate(CODECS):
+        cUrl = url + '_%s_%s' % (LIVE_RADIO_CODECS[cIndex],LIVE_RADIO_QUALITIES[bIndex])
+        mObj = MediaObject(
+          parts = [PartObject(key=Callback(PlayRadio,url = cUrl, ext=LIVE_RADIO_CODECS[cIndex]))],
+          audio_codec = codec,
+          bitrate = bitrate)
+        mobjects.append(mObj)
 
     return mobjects
     
 def PlayRadio(url):
-    Log.Debug("NRK PlayRadio: Playing " + url)
     return Redirect(url)
