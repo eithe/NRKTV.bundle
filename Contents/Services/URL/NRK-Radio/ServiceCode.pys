@@ -22,19 +22,27 @@ def MetadataObjectForURL(url):
         thumb = "")
     
 def MediaObjectsForURL(url):
-    Log.Debug("NRK: Adding media object for live radio stream: " + url)
+    Log.Debug("NRK: Adding single mp3 192 media object for live radio stream: " + url)
 
     mobjects = []
     
-    for bitrate in BITRATES:
-      for codec in CODECS:
-        mObj = MediaObject(
+    mObj = MediaObject(
           parts = [PartObject(key=Callback(PlayRadio,url = url, ext='mp3'))],
-          audio_codec = codec,
-          bitrate = bitrate)
-        mobjects.append(mObj)
+          audio_codec = AudioCodec.MP3,
+          bitrate = 192)
+    mobjects.append(mObj)
+        
+#    for bitrate in BITRATES:
+#      for codec in CODECS:
+#        mObj = MediaObject(
+#          parts = [PartObject(key=Callback(PlayRadio,url = url, ext='mp3'))],
+#          audio_codec = codec,
+#          bitrate = bitrate)
+#        mobjects.append(mObj)
+#        Log.Debug("NRK: Adding MediaObject for codec: " + codec + " and bitrate: " + bitrate)
 
     return mobjects
     
 def PlayRadio(url):
+    Log.Debug("NRK PlayRadio: Playing " + url)
     return Redirect(url)
