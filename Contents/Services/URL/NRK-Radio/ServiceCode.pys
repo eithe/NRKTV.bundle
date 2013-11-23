@@ -1,0 +1,40 @@
+﻿# -*- coding: utf-8 -*-
+
+# "THE BEER-WARE LICENSE" (Revision 42):
+# <eithe@plexforums> wrote this file.  As long as you retain this notice you
+# can do whatever you want with this stuff. If we meet some day, and you think
+# this stuff is worth it, you can buy me a beer in return. Eirik H.
+
+# Some of this stuff is from:
+# jonklo's NRK Plex plugin: https://github.com/plexinc-plugins/NRK.bundle
+# takoi's NRK XBMC plugin: https://github.com/takoi/xbmc-addon-nrk
+# Please comply with their licenses, I haven't looked at them yet.
+
+# NRK, if you are watching, don't hesitate to make contact.
+
+BITRATES = [32,92,192]
+CODECS = [AudioCodec.MP3,AudioCodec.AAC]
+
+def MetadataObjectForURL(url):
+    return TrackObject(
+        title = "Test",
+        summary = "summary",
+        thumb = "")
+    
+def MediaObjectsForURL(url):
+    Log.Debug("NRK: Adding media object for live radio stream: " + url)
+
+    mobjects = []
+    
+    for bitrate in BITRATES:
+      for codec in CODECS:
+        mObj = MediaObject(
+          parts = [PartObject(key=Callback(PlayRadio,url = url, ext='mp3'))],
+          audio_codec = codec,
+          bitrate = bitrate)
+        mobjects.append(mObj)
+
+    return mobjects
+    
+def PlayRadio(url):
+    return Redirect(url)
