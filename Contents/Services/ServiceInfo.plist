@@ -36,6 +36,17 @@
           <string>http://tv.nrk.no/direkte/nrk1</string>
         </array>
       </dict>
+      <key>NRK-Radio-Live</key>
+      <dict>
+        <key>URLPatterns</key>
+        <array>
+          <string>http://radio\.nrk\.no/direkte/.*</string>
+        </array>
+        <key>TestURLs</key>
+        <array>
+          <string>http://radio.nrk.no/direkte/p1</string>
+        </array>
+      </dict>
     </dict>
   </dict>
 </plist>

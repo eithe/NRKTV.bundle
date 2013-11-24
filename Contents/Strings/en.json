@@ -62,6 +62,9 @@
 
     "ack_title" : "Anerkjennelse",
     "ack_description" : "Klipp og lim fra jonklos NRK.bundle + takois xbmc-addon-nrk, sjekk github. Stor takk, uten dem ingen NRK TV for Plex.",
+    
+    "live_radio_title" : "Radio",
+    "live_radio_description" : "Direkte radiostrømmer.",
 
     "last_one": "true"
 }

@@ -1,0 +1,41 @@
+﻿# -*- coding: utf-8 -*-
+
+# "THE BEER-WARE LICENSE" (Revision 42):
+# <eithe@plexforums> wrote this file.  As long as you retain this notice you
+# can do whatever you want with this stuff. If we meet some day, and you think
+# this stuff is worth it, you can buy me a beer in return. Eirik H.
+
+# Some of this stuff is from:
+# jonklo's NRK Plex plugin: https://github.com/plexinc-plugins/NRK.bundle
+# takoi's NRK XBMC plugin: https://github.com/takoi/xbmc-addon-nrk
+# Please comply with their licenses, I haven't looked at them yet.
+
+# NRK, if you are watching, don't hesitate to make contact.
+
+LIVE_URL_JSON = 'http://v7.psapi.nrk.no/mediaelement/%s'
+LIVE_RADIO_BASEURL = 'http://radio.nrk.no/direkte/'
+
+def MetadataObjectForURL(url):
+    Log.Debug('NRK: MetadataObjectForURL called for %s' % url)
+    channel = url.replace(LIVE_RADIO_BASEURL,'')
+    audio_json = JSON.ObjectFromURL(LIVE_URL_JSON % channel, headers={'User-Agent':'Mozilla/5.0 (iPhone; CPU iPhone OS 6_0 like Mac OS X) AppleWebKit/536.26 (KHTML, like Gecko) Version/6.0 Mobile/10A5376e Safari/8536.25'})
+    return TrackObject(
+        title = audio_json['title'],
+        summary = audio_json['description'],
+        thumb = "")
+
+def MediaObjectsForURL(url):
+    Log.Debug("NRK: Adding media object for live radio stream: " + url)
+    channel = url.replace(LIVE_RADIO_BASEURL,'')
+    mobjects = []
+    mobjects.append(MediaObject(
+    parts = [PartObject(key=HTTPLiveStreamURL(Callback(PlayLiveStream, channel=channel, ext = 'ts')))],
+      optimized_for_streaming = True,
+      audio_channels = 2))
+    return mobjects
+
+@indirect
+def PlayLiveStream(channel):
+    audio_url = JSON.ObjectFromURL(LIVE_URL_JSON % channel, headers={'User-Agent':'Mozilla/5.0 (iPhone; CPU iPhone OS 6_0 like Mac OS X) AppleWebKit/536.26 (KHTML, like Gecko) Version/6.0 Mobile/10A5376e Safari/8536.25'})['mediaUrl']
+    Log.Debug('NRK: Found audio url %s' % audio_url )
+    return IndirectResponse(TrackObject, key=audio_url)
