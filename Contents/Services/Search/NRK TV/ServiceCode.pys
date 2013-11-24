@@ -1,0 +1,57 @@
+# -*- coding: utf-8 -*-
+
+# "THE BEER-WARE LICENSE" (Revision 42):
+# <eithe@plexforums> wrote this file. As long as you retain this notice you
+# can do whatever you want with this stuff. If we meet some day, and you think
+# this stuff is worth it, you can buy me a beer in return. Eirik H.
+
+# Some of this stuff is from:
+# jonklo's NRK Plex plugin: https://github.com/plexinc-plugins/NRK.bundle
+# takoi's NRK XBMC plugin: https://github.com/takoi/xbmc-addon-nrk
+# Please comply with their licenses, I haven't looked at them yet.
+
+# NRK, if you are watching, don't hesitate to make contact.
+
+SEARCH_URL = "http://tv.nrk.no/sok?q=%s&filter=rettigheter"
+
+def Search(query):
+
+  url = SEARCH_URL % String.Quote(query)
+  search_page = HTML.ElementFromURL(url)
+  search_page_initial_node = search_page.xpath('//ul[contains(@class,"searchresults")]')[0]
+  search_results = search_page_initial_node.xpath('//li[contains(@class,"listobject")]')
+
+  oc = ObjectContainer()
+
+  for item in search_results:
+    try:
+      # Attempt to determine the title
+      title = item.xpath('.//span[contains(@class,"listobject-title")]/strong/text()')[0]
+      Log.Debug("NRK: Search, found %s" % title)
+      # Attempt to determine the absolue URL to the page
+      url = item.xpath('.//a[contains(@class,"listobject-link")]/@href')[0]
+      Log.Debug("NRK: Search, url is %s" % url)
+      try:
+        thumb = item.xpath('.//a[contains(@class,"listobject-link")]//img/@src')[0]
+      except: thumb = ''
+      # Attempt to create a sensible description
+      try:
+        category = item.xpath('.//div[contains(@class,"stack-links")]/a/text()')[0]
+        desc_list = item.xpath('.//p//text()')
+        desc = ''
+        for desc_item in desc_list:
+          desc = desc + desc_item.strip() + ' '
+        description = '%s | %s' % (desc, category)
+      except: description = None
+
+      oc.add(VideoClipObject(
+        title = title,
+        summary = description,
+        thumb = Resource.ContentsOfURLWithFallback(thumb),
+        url = url
+      ))
+
+    except:
+      Log.Exception("NRK: Exception adding video result")
+
+  return oc

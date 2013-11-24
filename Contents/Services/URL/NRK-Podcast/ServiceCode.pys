@@ -1,0 +1,48 @@
+﻿# -*- coding: utf-8 -*-
+
+# "THE BEER-WARE LICENSE" (Revision 42):
+# <eithe@plexforums> wrote this file.  As long as you retain this notice you
+# can do whatever you want with this stuff. If we meet some day, and you think
+# this stuff is worth it, you can buy me a beer in return. Eirik H.
+
+# Some of this stuff is from:
+# jonklo's NRK Plex plugin: https://github.com/plexinc-plugins/NRK.bundle
+# takoi's NRK XBMC plugin: https://github.com/takoi/xbmc-addon-nrk
+# Please comply with their licenses, I haven't looked at them yet.
+
+# NRK, if you are watching, don't hesitate to make contact.
+
+def MetadataObjectForURL(url):
+    Log.Debug("NRK: Metadata for url: %s" % url)
+    if ".mp3" in url:
+      return TrackObject(
+        title = "Test",
+        summary = "summary",
+        thumb = "")
+    else:
+      return VideoClipObject(
+        title = "Test",
+        summary = "summary",
+        thumb = "")
+
+def MediaObjectsForURL(url):
+    Log.Debug("NRK: Adding media object for podcast: " + url)
+    mobjects = []
+    
+    if ".mp3" in url:
+      mobjects.append(MediaObject(
+          parts = [PartObject(key=Callback(PlayPodcast,url = url, ext = 'mp3'))],
+          audio_codec = AudioCodec.MP3,
+          bitrate = 128))
+      Log.Debug("NRK: Adding MediaObject with mp3 audio for podcast: " + url)
+    else:
+      mobjects.append(MediaObject(
+          parts = [PartObject(key=Callback(PlayPodcast,url = url, ext = 'mp4'))],
+          audio_codec = AudioCodec.AAC,
+          video_codec = VideoCodec.H264))
+      Log.Debug("NRK: Adding MediaObject with aac audio and h264 video for podcast: " + url)
+    return mobjects
+
+def PlayPodcast(url):
+    Log.Debug("NRK: Playing podcast:" + url)
+    return Redirect(url)

@@ -47,6 +47,23 @@
           <string>http://radio.nrk.no/direkte/p1</string>
         </array>
       </dict>
+      <key>NRK-Podcast</key>
+      <dict>
+        <key>URLPatterns</key>
+        <array>
+          <string>http://podkast\.nrk\.no/fil/.+(/.+)?</string>
+        </array>
+        <key>TestURLs</key>
+        <array>
+          <string>http://podkast.nrk.no/fil/andakten/nrk_andakten_2012-0831-0400_6348132067.mp3?stat=1&amp;pks=70484</string>
+        </array>
+      </dict>
+    </dict>
+    <key>Search</key>
+    <dict>
+        <key>NRK TV</key>
+        <dict>
+        </dict>
     </dict>
   </dict>
 </plist>

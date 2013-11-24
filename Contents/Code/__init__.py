@@ -16,6 +16,7 @@
 from util import *
 from live_radio import LiveRadioMenu
 from itertools import repeat
+from podcasts import *
 
 ####################################################################################################
 
@@ -74,6 +75,12 @@ def MainMenu():
         title=unicode(L('live_radio_title')), 
         summary=unicode(L('live_radio_description')), 
         thumb=R('nrk-nettradio.png')))
+    
+    oc.add(DirectoryObject(
+        key = Callback(PodcastMainMenu),
+        title=unicode(L('podcasts_title')), 
+        summary=unicode(L('podcasts_description')), 
+        thumb=R(ICON_DEFAULT)))
 
     return oc
 
