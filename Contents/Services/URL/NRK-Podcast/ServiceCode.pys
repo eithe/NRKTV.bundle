@@ -34,10 +34,13 @@ def MediaObjectsForURL(url):
           parts = [PartObject(key=Callback(PlayPodcast,url = url, ext = 'mp3'))],
           audio_codec = AudioCodec.MP3,
           bitrate = 128))
+      Log.Debug("NRK: Adding MediaObject with mp3 audio for podcast: " + url)
     else:
       mobjects.append(MediaObject(
           parts = [PartObject(key=Callback(PlayPodcast,url = url, ext = 'mp4'))],
-          audio_codec = AudioCodec.AAC))
+          audio_codec = AudioCodec.AAC,
+          video_codec = VideoCodec.H264))
+      Log.Debug("NRK: Adding MediaObject with aac audio and h264 video for podcast: " + url)
     return mobjects
 
 def PlayPodcast(url):
