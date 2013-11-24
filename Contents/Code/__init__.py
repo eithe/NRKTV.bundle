@@ -15,6 +15,7 @@
 #from data import *
 from util import *
 from itertools import repeat
+from podcasts import *
 
 ####################################################################################################
 
@@ -67,6 +68,12 @@ def MainMenu():
         title=unicode(L('letters_title')), 
         summary=unicode(L('letters_description')), 
         thumb=R('nrk-nett-tv.png')))
+    
+    oc.add(DirectoryObject(
+        key = Callback(PodcastMainMenu),
+        title=unicode(L('podcasts_title')), 
+        summary=unicode(L('podcasts_description')), 
+        thumb=R(ICON_DEFAULT)))
 
     return oc
 

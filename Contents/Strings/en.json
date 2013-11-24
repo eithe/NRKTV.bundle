@@ -50,6 +50,15 @@
     
     "about_title" : "Om NRK TV for Plex",
     "about_description" : "Om dette Plex-tilegget for NRK",
+    
+    "podcasts_title" : "Podkast",
+    "podcasts_description" : "Video- og lydpodkaster fra nrk.no/podkast",
+    
+    "podcasts_video_title" : "Videopodkast",
+    "podcasts_video_description" : "Videopodkaster fra NRK",
+
+    "podcasts_audio_title" : "Lydpodkast",
+    "podcasts_audio_description" : "Lydpodkaster fra NRK",
 
     "copyright_title" : "Kopirett",
     "copyright_description" : "THE BEER-WARE LICENSE (Revision 42): eithe and burnbay @plexforums wrote this.  As long as you retain this notice you can do whatever you want with this stuff. If we meet some day, and you think this stuff is worth it, you can buy us a beer in return. Eirik H.",
