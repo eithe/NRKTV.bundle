@@ -59,6 +59,9 @@
 
     "podcasts_audio_title" : "Lydpodkast",
     "podcasts_audio_description" : "Lydpodkaster fra NRK",
+    
+    "search_title" : "Søk i NRK Nett-TV",
+    "search_prompt" : "Søk i NRK Nett-TV",
 
     "copyright_title" : "Kopirett",
     "copyright_description" : "THE BEER-WARE LICENSE (Revision 42): eithe and burnbay @plexforums wrote this.  As long as you retain this notice you can do whatever you want with this stuff. If we meet some day, and you think this stuff is worth it, you can buy us a beer in return. Eirik H.",

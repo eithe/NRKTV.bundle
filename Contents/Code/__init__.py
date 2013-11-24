@@ -81,7 +81,9 @@ def MainMenu():
         title=unicode(L('podcasts_title')), 
         summary=unicode(L('podcasts_description')), 
         thumb=R(ICON_DEFAULT)))
-
+    
+    oc.add(SearchDirectoryObject(identifier="com.plexapp.plugins.nrktv", title=L("search_title"), prompt=L("search_prompt"))) 
+    
     return oc
 
 
