@@ -18,12 +18,13 @@ BITRATES = [32,92,192]
 LIVE_RADIO_CODECS = ['mp3','aac']
 CODECS = [AudioCodec.MP3,AudioCodec.AAC]
 
-#def MetadataObjectForURL(url):
-#    return TrackObject(
-#        title = "Test",
-#        summary = "summary",
-#        thumb = "")
-#
+def MetadataObjectForURL(url):
+    Log.Debug('NRK: MetadataObjectForURL called for %s' % url)
+    return TrackObject(
+        title = "Test",
+        summary = "summary",
+        thumb = "")
+
 def MediaObjectsForURL(url):
     Log.Debug("NRK: Adding media object for live radio stream: " + url)
 
@@ -39,6 +40,6 @@ def MediaObjectsForURL(url):
         mobjects.append(mObj)
 
     return mobjects
-    
+
 def PlayRadio(url):
     return Redirect(url)
