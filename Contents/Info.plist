@@ -29,5 +29,9 @@
   <string>1</string>
   <key>PlexPluginDevMode</key>
   <string>0</string>
+  <key>PlexPluginRegions</key>
+  <array>
+    <string>NO</string>
+  </array>
 </dict>
 </plist>
