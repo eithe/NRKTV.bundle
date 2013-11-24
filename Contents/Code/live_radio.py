@@ -66,7 +66,7 @@ def LiveRadioMenu():
         oc.add(TrackObject(
           title = station[1],
           url = url,
-          artist=station[2],
+          artist = station[2],
           thumb=R('nrk-nettradio.png')
         )) # TODO, add all images for the various channels and then R(thumb_file)
     
