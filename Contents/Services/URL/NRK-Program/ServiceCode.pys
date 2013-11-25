@@ -12,40 +12,108 @@
 
 # NRK, if you are watching, don't hesitate to make contact.
 
-# http://nordond16b-f.akamaihd.net/i/no/open/c6/c648699108737a5849995…a58499953e2094e1cb377a50045_,141,316,563,1266,2250,.mp4.csmil/master.m3u8
-import re
+API_META_URL = "http://v7.psapi.nrk.no/mediaelement/%s"
+RE_VIDEO_ID = Regex('\w{4}\d{8}')
 
-RESOLUTIONS = ["1080"]
+USERAGENT_FOR_CLIENTS = (
+    {
+        ClientPlatform.MacOSX: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_3) AppleWebKit/534.55.3 (KHTML, like Gecko) Version/5.1.3 Safari/534.53.10',
+        ClientPlatform.Linux: 'Mozilla/5.0 (X11; CrOS i686 4319.74.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/29.0.1547.57 Safari/537.36',
+        ClientPlatform.Windows: 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/30.0.1599.101 Safari/537.36',
+        ClientPlatform.iOS: 'Mozilla/5.0 (iPad; U; CPU OS 3_2 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) Version/4.0.4 Mobile/7B334b Safari/531.21.10',
+        ClientPlatform.Android: 'Mozilla/5.0 (Linux; Android 4.1.1; Nexus 7 Build/JRO03D) AppleWebKit/535.19 (KHTML, like Gecko) Chrome/18.0.1025.166 Safari/535.19',
+        'Plex Home Theater': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_3) AppleWebKit/534.55.3 (KHTML, like Gecko) Version/5.1.3 Safari/534.53.10',
+        'Safari': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_3) AppleWebKit/534.55.3 (KHTML, like Gecko) Version/5.1.3 Safari/534.53.10'
+    }
+)
 
 def MetadataObjectForURL(url):
     # Request the URL
-    page = HTML.ElementFromURL(url)
-    # Extract the details available directly form the page.
-    title = page.xpath("//meta[@name='title']")[0].get('content')
-    summary = page.xpath("//meta[@name='description']")[0].get('content')
-    thumb = page.xpath("//*[@id='episode2']/div/img")[0].get('src')
-
-    # Return an object to Plex
+    video_id = RE_VIDEO_ID.search(url).group()
+    meta_url = API_META_URL % video_id
+    response = JSON.ObjectFromURL(meta_url)
+    # Extract the details available directly from the page.
+    title = response['title']
+    summary = response['description']
+    thumb = ''
+    Log.Debug('MetadataObjectForURL: ' + title)
     return VideoClipObject(
         title = title,
         summary = summary,
         thumb = thumb)
     
 def MediaObjectsForURL(url):
-    #Log.Debug("NRK: Adding media object for program: " + url)
-    video_id = re.search( r'\w{4}\d{8}', url, re.M|re.I).group()
-    mobjects = []
-    for res in reversed(RESOLUTIONS):
-        mobjects.append(MediaObject(
-            parts = [PartObject(key=HTTPLiveStreamURL(Callback(GetMediaURL,video_id = video_id)))],
-            video_resolution = res,
-            optimized_for_streaming = True,
-            audio_channels = 2))
-    
-    return mobjects
+    video_id = RE_VIDEO_ID.search(url).group()
+    return [
+            MediaObject(
+                container = 'mpegts',
+                video_codec = VideoCodec.H264,
+                audio_codec = AudioCodec.AAC,
+                optimized_for_streaming = True,
+                audio_channels = 2,
+                parts = [
+                        PartObject(
+                                key = HTTPLiveStreamURL(Callback(PlayVideo, video_id = video_id))
+                            )
+                        ]
+                )
+            ]
 
-def GetMediaURL(video_id):
-    mediaMetadataUrl = "http://v7.psapi.nrk.no/mediaelement/%s" % video_id
-    mediaUrl = JSON.ObjectFromURL(mediaMetadataUrl)['mediaUrl']
-    Log.Debug("MEDIA URL: " + mediaUrl)
-    return Redirect(mediaUrl.replace('/z/', '/i/').replace('manifest.f4m', 'master.m3u8'))
+@indirect
+def PlayVideo(video_id):
+    mediaMetadataUrl = API_META_URL % video_id
+    user_agent = USERAGENT_FOR_CLIENTS[Client.Platform]
+    video_url = JSON.ObjectFromURL(mediaMetadataUrl, headers={'User-Agent': user_agent})['mediaUrl']
+    Log.Debug("CLIENT: " + Client.Platform + ", USER_AGENT: " + user_agent)
+    return IndirectResponse(
+        VideoClipObject,
+        key = HTTPLiveStreamURL(GetClientDependentURL(video_url))
+    )
+
+def GetClientDependentURL(url):
+    if Client.Platform in ['MacOSX', 'Windows', 'Plex Home Theater', None]:
+        streams = GetHLSStreams(url)
+    
+        # Return highest bitrate url since PMC can't handle HLS correctly
+        # Also consider a client not identifying itself as needing help,
+        # the Samsung client is one of those. 
+        return streams[0]['url']
+    else:
+        # Other clients can handle HLS correctly
+        return url 
+
+def GetHLSStreams(url):
+    streams = []
+
+    playList = HTTP.Request(url).content
+    #Log.Debug("M3U8: " + playList)
+    
+    # Parse the m3u8 file to get:
+    # - URL
+    # - Resolution
+    # - Bitrate
+    for line in playList.splitlines():
+        if "BANDWIDTH" in line:
+            stream            = {}
+            stream["bitrate"] = int(Regex('(?<=BANDWIDTH=)[0-9]+').search(line).group(0))        
+            #Log.Debug("BITRATE=" + str(stream["bitrate"]))
+            if "RESOLUTION" in line:
+                stream["resolution"] = int(Regex('(?<=RESOLUTION=)[0-9]+x[0-9]+').search(line).group(0).split("x")[1])
+                #Log.Debug("RESOLUTION=" + str(stream["resolution"]))
+            else:
+                stream["resolution"] = 0
+
+        elif ".m3u8" in line:
+            #Log.Debug("LINE: " + line)
+            if not line.startswith("https://"):
+                path          = url[ : url.rfind('/') + 1]
+                stream["url"] = path + line
+            else:
+                stream["url"] = line
+                
+            #Log.Debug("STREAM URL: " + stream["url"])
+            streams.append(stream)
+                
+    sorted_streams = sorted(streams, key = lambda stream: stream["bitrate"], reverse = True)        
+
+    return sorted_streams
