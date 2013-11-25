@@ -43,6 +43,7 @@ def MediaObjectsForURL(url):
       Log.Debug("NRK: Adding MediaObject with aac audio and h264 video for podcast: " + url)
     return mobjects
 
+@indirect
 def PlayPodcast(url):
     Log.Debug("NRK: Playing podcast:" + url)
-    return Redirect(url)
+    return IndirectResponse(TrackObject, key=url)

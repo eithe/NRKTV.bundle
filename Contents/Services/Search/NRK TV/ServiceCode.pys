@@ -15,7 +15,7 @@
 SEARCH_URL = "http://tv.nrk.no/sok?q=%s&filter=rettigheter"
 
 def Search(query):
-
+  Log.Debug("NRK: Search triggered")
   url = SEARCH_URL % String.Quote(query)
   search_page = HTML.ElementFromURL(url)
   search_page_initial_node = search_page.xpath('//ul[contains(@class,"searchresults")]')[0]

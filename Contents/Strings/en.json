@@ -1,8 +1,11 @@
 {
-    "title": "NRK TV",
+    "title": "NRK",
 
     "livetv_title": "Direkte TV",
     "livetv_description": "Direkte strømmer fra NRKs TV-kanaler.",
+    
+    "tv_title": "TV",
+    "tv_description": "Videoer, programmer og serier fra NRK Nett-TV.",
 
     "webtv_title": "Nett-TV",
     "webtv_description": "NRKs arkiv over tidligere sendte programmer.",

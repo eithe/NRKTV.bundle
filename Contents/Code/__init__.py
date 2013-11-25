@@ -41,6 +41,30 @@ def MainMenu():
     oc = ObjectContainer()
     
     oc.add(DirectoryObject(
+        key = Callback(TVMenu),
+        title=unicode(L('tv_title')), 
+        summary=unicode(L('tv_description')), 
+        thumb=R('nrk-nett-tv.png')))
+        
+    oc.add(DirectoryObject(
+        key = Callback(LiveRadioMenu),
+        title=unicode(L('live_radio_title')), 
+        summary=unicode(L('live_radio_description')), 
+        thumb=R('nrk-nettradio.png')))
+    
+    oc.add(DirectoryObject(
+        key = Callback(PodcastMainMenu),
+        title=unicode(L('podcasts_title')), 
+        summary=unicode(L('podcasts_description')), 
+        thumb=R(ICON_DEFAULT)))
+    
+    return oc
+
+@route(pluginRoute('/tv'))
+def TVMenu():
+    oc = ObjectContainer()
+    
+    oc.add(DirectoryObject(
         key = Callback(LiveTVMenu),
         title=unicode(L('livetv_title')), 
         summary=unicode(L('livetv_description')), 
@@ -69,23 +93,10 @@ def MainMenu():
         title=unicode(L('letters_title')), 
         summary=unicode(L('letters_description')), 
         thumb=R('nrk-nett-tv.png')))
-        
-    oc.add(DirectoryObject(
-        key = Callback(LiveRadioMenu),
-        title=unicode(L('live_radio_title')), 
-        summary=unicode(L('live_radio_description')), 
-        thumb=R('nrk-nettradio.png')))
-    
-    oc.add(DirectoryObject(
-        key = Callback(PodcastMainMenu),
-        title=unicode(L('podcasts_title')), 
-        summary=unicode(L('podcasts_description')), 
-        thumb=R(ICON_DEFAULT)))
     
     oc.add(SearchDirectoryObject(identifier="com.plexapp.plugins.nrktv", title=L("search_title"), prompt=L("search_prompt"))) 
     
     return oc
-
 
 @route(pluginRoute('/live'))
 def LiveTVMenu():
