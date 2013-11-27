@@ -36,7 +36,7 @@ def GetRecommended():
     for item in items:
         urls.append(BASE_URL + item.get('href'))
         titles.append(item.xpath('./div/img')[0].get('alt'))
-        Log("NRK - title: " + item.xpath('./div/img')[0].get('alt'))
+        #Log("NRK - title: " + item.xpath('./div/img')[0].get('alt'))
         thumbs.append(item.xpath('./div/img')[0].get('src'))
         fanarts.append(FanartURL(item.get('href')))
         summaries.append('')
@@ -44,7 +44,7 @@ def GetRecommended():
     return titles, urls, thumbs, fanarts, summaries
 
 def GetByLetter(letterUrl):
-    Log.Debug("LETTER URL: " + letterUrl)
+    #Log.Debug("LETTER URL: " + letterUrl)
     return ProgramList(PROGRAM_LETTER_BASE_URL % letterUrl)
 
 def GetMostRecent():
@@ -57,10 +57,10 @@ def GetMostPopularMonth():
     return JSONList(JSON_URL_POPULAR_MONTH)
 
 def GetSeasons(url):
-    Log.Debug("URL: " + url)
+    #Log.Debug("URL: " + url)
     html = HTML.ElementFromURL(url)
     seasons = html.xpath("//noscript/ul[@class='line-sep clearfix']//a[@class='seasonLink']")
-    Log.Debug("Seasons: " + str(seasons))
+    #Log.Debug("Seasons: " + str(seasons))
     titles = []
     urls = []
     thumbs = []
@@ -76,10 +76,10 @@ def GetSeasons(url):
     return titles, urls, thumbs, fanarts, summaries
 
 def GetEpisodes(url):
-    Log.Debug("URL: " + url)
+    #Log.Debug("URL: " + url)
     html = HTML.ElementFromURL(url)
     episodes = html.xpath("//*[@id='episodeGrid']//tr[@class='episode-row js-click ']//a")
-    Log.Debug("Episodes: " + str(episodes))
+    #Log.Debug("Episodes: " + str(episodes))
     titles = []
     urls = []
     thumbs = []

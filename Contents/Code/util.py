@@ -78,7 +78,7 @@ def FanartURL(url):
     else:
         fUrl = ''
     
-    Log.Debug("FANART URL: " + fUrl)    
+    #Log.Debug("FANART URL: " + fUrl)    
     return fUrl
     
 def ThumbURL(url):
@@ -88,7 +88,7 @@ def ThumbURL(url):
     else:
         tUrl = "http://nrk.eu01.aws.af.cm/t/%s" % url.lstrip('/')
 
-    Log.Debug("THUMB URL: " + tUrl)
+    #Log.Debug("THUMB URL: " + tUrl)
     return tUrl
     
 # Too slow at the moment. Needs caching

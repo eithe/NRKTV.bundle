@@ -94,7 +94,7 @@ def TVMenu():
         summary=unicode(L('letters_description')), 
         thumb=R('nrk-nett-tv.png')))
     
-    oc.add(SearchDirectoryObject(identifier="com.plexapp.plugins.nrktv", title=L("search_title"), prompt=L("search_prompt"))) 
+    oc.add(SearchDirectoryObject(identifier="com.plexapp.plugins.nrktv", title=unicode(L("search_title")), prompt=unicode(L("search_prompt")))) 
     
     return oc
 
@@ -208,14 +208,14 @@ def View(titles, urls, thumbs=repeat(''), fanarts=repeat(''), summaries=repeat('
         fanart = fanart() if callable(fanart) else fanart
         
         if '/Episodes/' in url:
-            Log.Debug("Episodes: " + url)
+            #Log.Debug("Episodes: " + url)
             oc.add(DirectoryObject(
             key = Callback(Episodes, url = url), title = title, thumb = thumb, art = fanart))
         elif '/program/' in url or re.search( r'/\w{4}\d{8}/', url, re.M|re.I): #koid24002713 Playable:
-            Log.Debug("Program: " + url)
+            #Log.Debug("Program: " + url)
             oc.add(VideoClipObject(url = url, title = title, thumb = thumb, art = fanart, summary = summary))
         else:
-            Log.Debug("Series: " + url)
+            #Log.Debug("Series: " + url)
             oc.add(DirectoryObject(
             key = Callback(Series, url = url), title = title, thumb = thumb, art = fanart))
         

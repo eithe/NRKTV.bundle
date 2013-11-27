@@ -12,6 +12,8 @@
 
 # NRK, if you are watching, don't hesitate to make contact.
 
+THUMB_URL = "http://nrk.eu01.aws.af.cm/t/%s"
+FANART_URL = "http://nrk.eu01.aws.af.cm/f/%s"
 API_META_URL = "http://v7.psapi.nrk.no/mediaelement/%s"
 RE_VIDEO_ID = Regex('\w{4}\d{8}')
 
@@ -21,9 +23,12 @@ USERAGENT_FOR_CLIENTS = (
         ClientPlatform.Linux: 'Mozilla/5.0 (X11; CrOS i686 4319.74.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/29.0.1547.57 Safari/537.36',
         ClientPlatform.Windows: 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/30.0.1599.101 Safari/537.36',
         ClientPlatform.iOS: 'Mozilla/5.0 (iPad; U; CPU OS 3_2 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) Version/4.0.4 Mobile/7B334b Safari/531.21.10',
-        ClientPlatform.Android: 'Mozilla/5.0 (Linux; Android 4.1.1; Nexus 7 Build/JRO03D) AppleWebKit/535.19 (KHTML, like Gecko) Chrome/18.0.1025.166 Safari/535.19',
-        'Plex Home Theater': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_3) AppleWebKit/534.55.3 (KHTML, like Gecko) Version/5.1.3 Safari/534.53.10',
-        'Safari': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_3) AppleWebKit/534.55.3 (KHTML, like Gecko) Version/5.1.3 Safari/534.53.10'
+        ClientPlatform.Android: 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/534.24 (KHTML, like Gecko) Chrome/11.0.696.34 Safari/534.24',
+        ClientPlatform.Roku: 'Mozilla/5.0 (iPad; U; CPU OS 3_2 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) Version/4.0.4 Mobile/7B334b Safari/531.21.10',
+        'Plex Home Theater': 'Mozilla/5.0 (iPad; U; CPU OS 3_2 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) Version/4.0.4 Mobile/7B334b Safari/531.21.10',
+        'Safari': 'Mozilla/5.0 (iPad; U; CPU OS 3_2 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) Version/4.0.4 Mobile/7B334b Safari/531.21.10',
+        'Chrome': 'Mozilla/5.0 (iPad; U; CPU OS 3_2 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) Version/4.0.4 Mobile/7B334b Safari/531.21.10',
+        'Unknown Browser': 'Mozilla/5.0 (iPad; U; CPU OS 3_2 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) Version/4.0.4 Mobile/7B334b Safari/531.21.10'
     }
 )
 
@@ -35,15 +40,18 @@ def MetadataObjectForURL(url):
     # Extract the details available directly from the page.
     title = response['title']
     summary = response['description']
-    thumb = ''
-    Log.Debug('MetadataObjectForURL: ' + title)
+    thumb = THUMB_URL % response['relativeOriginUrl']
+    fanart = FANART_URL % response['relativeOriginUrl']
+    #Log.Debug('MetadataObjectForURL: ' + title)
     return VideoClipObject(
         title = title,
         summary = summary,
-        thumb = thumb)
+        thumb = thumb,
+        art = fanart)
     
 def MediaObjectsForURL(url):
     video_id = RE_VIDEO_ID.search(url).group()
+    Log.Debug("CLIENT: " + Client.Platform + ", CLIENT PROTOCOLS: " + str(Client.Protocols))
     return [
             MediaObject(
                 container = 'mpegts',
@@ -71,7 +79,7 @@ def PlayVideo(video_id):
     )
 
 def GetClientDependentURL(url):
-    if Client.Platform in ['MacOSX', 'Windows', 'Plex Home Theater', None]:
+    if Client.Platform in ['MacOSX', 'Windows', None]:
         streams = GetHLSStreams(url)
     
         # Return highest bitrate url since PMC can't handle HLS correctly
@@ -108,8 +116,6 @@ def GetHLSStreams(url):
             if not line.startswith("https://"):
                 path          = url[ : url.rfind('/') + 1]
                 stream["url"] = path + line
-            else:
-                stream["url"] = line
                 
             #Log.Debug("STREAM URL: " + stream["url"])
             streams.append(stream)
