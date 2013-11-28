@@ -81,5 +81,8 @@
     "live_radio_title" : "Radio",
     "live_radio_description" : "Direkte radiostrømmer.",
 
-    "last_one": "true"
+    "last_one": "true",
+    
+    "paging_next": "Neste"
+    
 }

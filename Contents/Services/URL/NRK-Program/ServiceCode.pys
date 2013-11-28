@@ -51,7 +51,7 @@ def MetadataObjectForURL(url):
     
 def MediaObjectsForURL(url):
     video_id = RE_VIDEO_ID.search(url).group()
-    Log.Debug("CLIENT: " + Client.Platform + ", CLIENT PROTOCOLS: " + str(Client.Protocols))
+    #Log.Debug("CLIENT: " + Client.Platform + ", CLIENT PROTOCOLS: " + str(Client.Protocols))
     return [
             MediaObject(
                 container = 'mpegts',

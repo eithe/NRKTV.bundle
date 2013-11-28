@@ -18,11 +18,13 @@ import httplib, urllib
 PROGRAM_URL = Regex('\/program\/([^\/]+)')
 PROGRAM_IMAGE_BASE_URL = 'http://nrk.eu01.aws.af.cm/f/%s'
 PROGRAM_LETTER_BASE_URL = BASE_URL + '/programmer/%s'
+PROGRAM_CATEGORY_BASE_URL = BASE_URL + '/programmer/%s'
+PROGRAM_CATEGORY_LETTER_BASE_URL = PROGRAM_CATEGORY_BASE_URL + '/%s'
 JSON_URL_RECENT = BASE_URL + '/listobjects/recentlysent.json/page/0/100'
 JSON_URL_RECENT_SENT_BY_CATEGORY = BASE_URL + '/listobjects/recentlysentbycategory/%s.json/page/0'
 JSON_URL_POPULAR_WEEK = BASE_URL + '/listobjects/mostpopular/Week.json/page/0/100'
 JSON_URL_POPULAR_MONTH = BASE_URL + '/listobjects/mostpopular/Month.json/page/0/100'
-JSON_URL_CATEGORY = BASE_URL + '/listobjects/indexelements/%s/page/0'
+JSON_URL_CATEGORY = BASE_URL + '/listobjects/indexelements/%s/page/%s'
 
 def GetRecommended():
     start_page = HTML.ElementFromURL(BASE_URL)
@@ -46,6 +48,17 @@ def GetRecommended():
 def GetByLetter(letterUrl):
     #Log.Debug("LETTER URL: " + letterUrl)
     return ProgramList(PROGRAM_LETTER_BASE_URL % letterUrl)
+
+def GetCategories():
+  titles = [ "Barn", "Dokumentar og fakta", "Filmer og serier", "Helse, forbruker og livsstil",
+    "Kultur og underholdning", "Nyheter", "Samisk", "Sport", "Tegnspråk" ]
+  urls = [ PROGRAM_CATEGORY_BASE_URL % "barn", PROGRAM_CATEGORY_BASE_URL % "dokumentar-og-fakta", PROGRAM_CATEGORY_BASE_URL % "filmer-og-serier", PROGRAM_CATEGORY_BASE_URL % "helse-forbruker-og-livsstil",
+    PROGRAM_CATEGORY_BASE_URL % "kultur-og-underholdning", PROGRAM_CATEGORY_BASE_URL % "nyheter", PROGRAM_CATEGORY_BASE_URL % "samisk", PROGRAM_CATEGORY_BASE_URL % "sport", PROGRAM_CATEGORY_BASE_URL % "tegnspraak" ]
+  
+  return titles, urls
+
+def GetByCategory(category, index):
+  return JSONList(JSON_URL_CATEGORY % (category, index))
 
 def GetMostRecent():
     return JSONList(JSON_URL_RECENT)

@@ -41,15 +41,40 @@ def emptyItem():
             thumb='')
             
 def JSONList(url):
-    elems = JSON.ObjectFromURL(url)['Data']
+    if '/indexelements/' in url: #Get index
+        splitUrl = url.split('/')
+        index = int(splitUrl[len(splitUrl)-1])
+        category = splitUrl[len(splitUrl)-3]
+        
+    titles = []
+    urls = []
+    thumbs = []
+    fanarts = []
+    summaries = []
 
-    titles = [ e['Title'] for e in elems ]
-    urls = [ BASE_URL + e['Url'] for e in elems ]
-    thumbs = [ e['Images'][0]['ImageUrl'] for e in elems ]
-    fanarts = [ FanartURL(e['Url']) for e in elems ]
-    summaries = [ GetSummary(e['Url']) for e in elems ]
-    return titles, urls, thumbs, fanarts, summaries
-
+    try:
+        elems = JSON.ObjectFromURL(url)['Data']
+    
+        if elems['characters']:
+            for char in elems['characters']:
+                for e in char['elements']:
+                    #Log("Elems: " + str(e))
+                    titles.append(e['Title'])
+                    urls.append(BASE_URL + e['Url'])
+                    thumbs.append(e['Images'][0]['ImageUrl'])
+                    fanarts.append(FanartURL(e['Url']))
+                    summaries.append(e['Title'])
+        else:
+            titles = [ e['Title'] for e in elems ]
+            urls = [ BASE_URL + e['Url'] for e in elems ]
+            thumbs = [ e['Images'][0]['ImageUrl'] for e in elems ]
+            fanarts = [ FanartURL(e['Url']) for e in elems ]
+            summaries = [ GetSummary(e['Url']) for e in elems ]
+    except:
+        Log.Error("Error calling: " + url)
+    
+    return titles, urls, thumbs, fanarts, summaries, index+1, category
+        
 def ProgramList(url):    
     httpRequest = HTTP.Request(url = url, headers = {'X-Requested-With':'XMLHttpRequest'})
     #Log.Debug(httpRequest.content)

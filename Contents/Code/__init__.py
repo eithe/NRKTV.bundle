@@ -93,6 +93,12 @@ def TVMenu():
         title=unicode(L('letters_title')), 
         summary=unicode(L('letters_description')), 
         thumb=R('nrk-nett-tv.png')))
+        
+    oc.add(DirectoryObject(
+        key = Callback(Categories),
+        title=unicode(L('categories_title')), 
+        summary=unicode(L('categories_description')), 
+        thumb=R('nrk-nett-tv.png')))
     
     oc.add(SearchDirectoryObject(identifier="com.plexapp.plugins.nrktv", title=unicode(L("search_title")), prompt=unicode(L("search_prompt")))) 
     
@@ -180,6 +186,24 @@ def Letters():
          oc.add(emptyItem())
     return oc
 
+@route(pluginRoute('/letter/{x}'))
+def Letter(letterUrl):
+    import data
+    return View(*data.GetByLetter(letterUrl))
+    
+@route(pluginRoute('/categories'))
+def Categories():
+    import data
+    return View(*data.GetCategories())
+
+@route(pluginRoute('/category/{x}'))
+def Category(url, index = 0):
+    import data
+    splitUrl = url.split("/")
+    category = splitUrl[len(splitUrl)-1]
+    #Log.Debug("CATEGORY: " + str(category))
+    return View(*data.GetByCategory(category, index))
+
 @route(pluginRoute('/series/{x}'))
 def Series(url): 
     import data
@@ -190,17 +214,14 @@ def Episodes(url):
     import data
     return View(*data.GetEpisodes(url))
 
-@route(pluginRoute('/letter/{x}'))
-def Letter(letterUrl):
-    import data
-    return View(*data.GetByLetter(letterUrl))
-    
-    
-def View(titles, urls, thumbs=repeat(''), fanarts=repeat(''), summaries=repeat('')):
+def View(titles, urls, thumbs=repeat(''), fanarts=repeat(''), summaries=repeat(''), index=0, category = ''):
+    #Log.Debug("No of Titles: " + str(len(titles)))
     oc = ObjectContainer()
     total = len(titles)
     if total == 0:
         oc.add(emptyItem())
+        return oc
+        
     for title, url, thumb, fanart, summary in zip(titles, urls, thumbs, fanarts, summaries):
         #Log.Debug("NRK - url: " + url)
         summary = summary() if callable(summary) else summary
@@ -210,15 +231,23 @@ def View(titles, urls, thumbs=repeat(''), fanarts=repeat(''), summaries=repeat('
         if '/Episodes/' in url:
             #Log.Debug("Episodes: " + url)
             oc.add(DirectoryObject(
-            key = Callback(Episodes, url = url), title = title, thumb = thumb, art = fanart))
+            key = Callback(Episodes, url = url), title = unicode(title), thumb = thumb, art = fanart))
         elif '/program/' in url or re.search( r'/\w{4}\d{8}/', url, re.M|re.I): #koid24002713 Playable:
             #Log.Debug("Program: " + url)
-            oc.add(VideoClipObject(url = url, title = title, thumb = thumb, art = fanart, summary = summary))
+            oc.add(VideoClipObject(url = url, title = unicode(title), thumb = thumb, art = fanart, summary = summary))
+        elif '/programmer/' in url:
+            #Log.Debug("Program: " + url)
+            oc.add(DirectoryObject(
+            key = Callback(Category, url = url, index = index), title = unicode(title), thumb = R('nrk-nett-tv.png'), art = fanart))
         else:
             #Log.Debug("Series: " + url)
             oc.add(DirectoryObject(
-            key = Callback(Series, url = url), title = title, thumb = thumb, art = fanart))
-        
+            key = Callback(Series, url = url), title = unicode(title), thumb = thumb, art = fanart))
+    
+    if index > 0: #Add paging object
+        oc.add(DirectoryObject(
+            key = Callback(Category, url = BASE_URL + '/programmer/%s' % category, index = index), title = unicode(L("paging_next")), thumb = R('arrow-right.png'), art = fanart))
+    
     return oc
     
 def ValidatePrefs():
