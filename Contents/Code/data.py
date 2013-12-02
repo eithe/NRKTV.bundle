@@ -58,7 +58,7 @@ def GetCategories():
   return titles, urls
 
 def GetByCategory(category, index):
-  return JSONList(JSON_URL_CATEGORY % (category, index))
+    return JSONList(JSON_URL_CATEGORY % (category, index))
 
 def GetMostRecent():
     return JSONList(JSON_URL_RECENT)

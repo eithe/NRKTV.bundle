@@ -89,15 +89,15 @@ def TVMenu():
         thumb=R('nrk-nett-tv.png')))
 
     oc.add(DirectoryObject(
-        key = Callback(Letters),
-        title=unicode(L('letters_title')), 
-        summary=unicode(L('letters_description')), 
-        thumb=R('nrk-nett-tv.png')))
-        
-    oc.add(DirectoryObject(
         key = Callback(Categories),
         title=unicode(L('categories_title')), 
         summary=unicode(L('categories_description')), 
+        thumb=R('nrk-nett-tv.png')))
+
+    oc.add(DirectoryObject(
+        key = Callback(Letters),
+        title=unicode(L('letters_title')), 
+        summary=unicode(L('letters_description')), 
         thumb=R('nrk-nett-tv.png')))
     
     oc.add(SearchDirectoryObject(identifier="com.plexapp.plugins.nrktv", title=unicode(L("search_title")), prompt=unicode(L("search_prompt")))) 

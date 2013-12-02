@@ -41,10 +41,14 @@ def emptyItem():
             thumb='')
             
 def JSONList(url):
+    #Log.Debug("URL: " + url)
     if '/indexelements/' in url: #Get index
         splitUrl = url.split('/')
         index = int(splitUrl[len(splitUrl)-1])
         category = splitUrl[len(splitUrl)-3]
+    else:
+        index = -1
+        category = ''
         
     titles = []
     urls = []
@@ -54,8 +58,8 @@ def JSONList(url):
 
     try:
         elems = JSON.ObjectFromURL(url)['Data']
-    
-        if elems['characters']:
+
+        if index != -1: #No category
             for char in elems['characters']:
                 for e in char['elements']:
                     #Log("Elems: " + str(e))
@@ -71,7 +75,8 @@ def JSONList(url):
             fanarts = [ FanartURL(e['Url']) for e in elems ]
             summaries = [ GetSummary(e['Url']) for e in elems ]
     except:
-        Log.Error("Error calling: " + url)
+        e = sys.exc_info()[0]
+        Log.Error("Error calling: %s. Error: %s" % (url, e))
     
     return titles, urls, thumbs, fanarts, summaries, index+1, category
         
