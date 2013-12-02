@@ -56,5 +56,8 @@ Redownload the zip file and replace the .bundle file found here: github/NRKTV.bu
 
 Other OSs
 ===============
-We are currently not testing on Windows or Linux. If you know how to do it for any of these 
-operating system we'll gladly accept a description and add it here.
+Windows (without git installed)
+* Download zip file from here: https://github.com/eithe/NRKTV.bundle/archive/master.zip
+* Unzip the file
+* Rename unzipped folder to NRKTV.bundle
+* Move the NRKTV.bundle folder to C:\Users\<username>\AppData\Local\Plex Media Server\Plug-ins directory
