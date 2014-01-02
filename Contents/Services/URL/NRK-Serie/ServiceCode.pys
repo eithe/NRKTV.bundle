@@ -50,46 +50,53 @@ def MetadataObjectForURL(url):
 
 def MediaObjectsForURL(url):
     video_id = RE_VIDEO_ID.search(url).group()
-    #Log("VIDEO ID: " + video_id)
     return [
             MediaObject(
-                container = 'mpegts',
-                video_codec = VideoCodec.H264,
-                audio_codec = AudioCodec.AAC,
                 optimized_for_streaming = True,
                 audio_channels = 2,
                 parts = [
                         PartObject(
                                 key = HTTPLiveStreamURL(Callback(PlayVideo, video_id = video_id))
+                                #key = HTTPLiveStreamURL(PlayVideo(video_id))
                             )
                         ]
                 )
             ]
 
+
 @indirect
 def PlayVideo(video_id):
     mediaMetadataUrl = API_META_URL % video_id
-    user_agent = USERAGENT_FOR_CLIENTS[Client.Platform]
+    user_agent = "Mozilla/5.0 (iPad; U; CPU OS 3_2 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) Version/4.0.4 Mobile/7B334b Safari/531.21.10"
+    
+    if Client.Platform in USERAGENT_FOR_CLIENTS:
+        user_agent = USERAGENT_FOR_CLIENTS[Client.Platform]
+        
     video_url = JSON.ObjectFromURL(mediaMetadataUrl, headers={'User-Agent': user_agent})['mediaUrl']
-    #Log.Debug("PlayVideo: CLIENT: " + Client.Platform + ", USER_AGENT: " + user_agent + ", VIDEOURL: " + video_url)
+
     return IndirectResponse(
         VideoClipObject,
-        key = HTTPLiveStreamURL(GetClientDependentURL(video_url))
-    )
+        key = HTTPLiveStreamURL(GetHLSUrl(video_url))
+    )    
 
-def GetClientDependentURL(url):
-    if Client.Platform in ['MacOSX', 'Windows', None]:
-        streams = GetHLSStreams(url)
+    #return GetHLSUrl(video_url)
+
+def GetHLSUrl(url):
+    streams = GetHLSStreams(url)
+
+    # Return highest bitrate url since PMC can't handle HLS correctly
+    # Also consider a client not identifying itself as needing help,
+    # the Samsung client is one of those. 
+
+    if len(streams) < 1:
+        raise Ex.MediaNotAvailable
     
-        # Return highest bitrate url since PMC can't handle HLS correctly
-        # Also consider a client not identifying itself as needing help,
-        # the Samsung client is one of those. 
-        #Log("STREAM URL FOR " + Client.Platform + ": " + streams[0]['url'])
-        return streams[0]['url']
-    else:
-        # Other clients can handle HLS correctly
-        #Log("STREAM URL FOR " + Client.Platform + ": " + url)
-        return url 
+    maxBitrateURL = streams[0]["url"]
+    return maxBitrateURL
+    
+    #newPlayList = HTTP.Request(maxBitrateURL).content
+
+    #return newPlayList        
 
 def GetHLSStreams(url):
     streams = []
@@ -97,6 +104,7 @@ def GetHLSStreams(url):
     playList = HTTP.Request(url).content
     #Log.Debug("M3U8: " + playList)
     
+    stream = {}
     # Parse the m3u8 file to get:
     # - URL
     # - Resolution
@@ -104,21 +112,17 @@ def GetHLSStreams(url):
     for line in playList.splitlines():
         if "BANDWIDTH" in line:
             stream            = {}
-            stream["bitrate"] = int(Regex('(?<=BANDWIDTH=)[0-9]+').search(line).group(0))        
-            #Log.Debug("BITRATE=" + str(stream["bitrate"]))
-            if "RESOLUTION" in line:
-                stream["resolution"] = int(Regex('(?<=RESOLUTION=)[0-9]+x[0-9]+').search(line).group(0).split("x")[1])
-                #Log.Debug("RESOLUTION=" + str(stream["resolution"]))
-            else:
-                stream["resolution"] = 0
-
+            stream["bitrate"] = int(Regex('(?<=BANDWIDTH=)[0-9]+').search(line).group(0))
+		
+        elif line.startswith("#"):
+            pass
+		
         elif ".m3u8" in line:
-            #Log.Debug("LINE: " + line)
-            if not line.startswith("https://"):
-                path          = url[ : url.rfind('/') + 1]
-                stream["url"] = path + line
-                
-            #Log.Debug("STREAM URL: " + stream["url"])
+            path = ''
+            if not line.startswith("http"):
+                path = url[ : url.rfind('/') + 1]
+			
+            stream["url"] = path + line
             streams.append(stream)
                 
     sorted_streams = sorted(streams, key = lambda stream: stream["bitrate"], reverse = True)        

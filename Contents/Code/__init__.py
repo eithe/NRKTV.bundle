@@ -12,7 +12,6 @@
 
 # NRK, if you are watching, don't hesitate to make contact.
 
-#from data import *
 from util import *
 from live_radio import LiveRadioMenu
 from itertools import repeat
@@ -33,7 +32,7 @@ def Start():
     EpisodeObject.art = R(ART_DEFAULT)
     EpisodeObject.thumb = R(ICON_DEFAULT)
 
-    #HTTP.CacheTime = CACHE_1HOUR
+    HTTP.CacheTime = CACHE_1HOUR
     #HTTP.Headers['X-Requested-With'] = 'XMLHttpRequest'
     HTTP.Headers['Cookie'] = 'NRK_PLAYER_SETTINGS_TV=devicetype=desktop&preferred-player-odm=hlslink&preferred-player-live=hlslink'
     
@@ -209,7 +208,7 @@ def Series(url):
     import data
     return View(*data.GetSeasons(url))
 
-@route(pluginRoute('/series/{x}'))
+@route(pluginRoute('/episodes/{x}'))
 def Episodes(url): 
     import data
     return View(*data.GetEpisodes(url))

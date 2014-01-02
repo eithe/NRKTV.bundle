@@ -20,6 +20,7 @@ PROGRAM_IMAGE_BASE_URL = 'http://nrk.eu01.aws.af.cm/f/%s'
 PROGRAM_LETTER_BASE_URL = BASE_URL + '/programmer/%s'
 PROGRAM_CATEGORY_BASE_URL = BASE_URL + '/programmer/%s'
 PROGRAM_CATEGORY_LETTER_BASE_URL = PROGRAM_CATEGORY_BASE_URL + '/%s'
+PROGRAM_SEASON_URL = BASE_URL + "/program/Episodes/%s/%s/%s" #"/program/Episodes/schrodingers-katt/22493/dmpv73000114"
 JSON_URL_RECENT = BASE_URL + '/listobjects/recentlysent.json/page/0/100'
 JSON_URL_RECENT_SENT_BY_CATEGORY = BASE_URL + '/listobjects/recentlysentbycategory/%s.json/page/0'
 JSON_URL_POPULAR_WEEK = BASE_URL + '/listobjects/mostpopular/Week.json/page/0/100'
@@ -72,7 +73,12 @@ def GetMostPopularMonth():
 def GetSeasons(url):
     #Log.Debug("URL: " + url)
     html = HTML.ElementFromURL(url)
-    seasons = html.xpath("//noscript/ul[@class='line-sep clearfix']//a[@class='seasonLink']")
+
+    programId = html.xpath("/html/head/meta[@name='programid']")
+    urlSlashSplit = url.split("/")
+    seriesName = urlSlashSplit[len(urlSlashSplit)-1]
+
+    seasons = html.xpath("//a[@class='buttonbar-link ga season-link']")
     #Log.Debug("Seasons: " + str(seasons))
     titles = []
     urls = []
@@ -80,7 +86,7 @@ def GetSeasons(url):
     fanarts = []
     summaries = []
     for season in seasons:
-        titles.append(L('season_caption') + ' ' + season.xpath('./text()')[0])
+        titles.append(season.xpath('./text()')[0])
         urls.append(BASE_URL + season.get('href'))
         fanarts.append(FanartURL(url.replace(BASE_URL, '')))
         thumbs.append(ThumbURL(url.replace(BASE_URL, '')))
@@ -90,8 +96,8 @@ def GetSeasons(url):
 
 def GetEpisodes(url):
     #Log.Debug("URL: " + url)
-    html = HTML.ElementFromURL(url)
-    episodes = html.xpath("//*[@id='episodeGrid']//tr[@class='episode-row js-click ']//a")
+    html = HTML.ElementFromURL(url, headers = {'X-Requested-With':'XMLHttpRequest'})
+    episodes = html.xpath("//li[@data-episode] [not(contains(@class, 'no-rights'))]") #//a[not(contains(@id, 'xx'))]
     #Log.Debug("Episodes: " + str(episodes))
     titles = []
     urls = []
@@ -99,10 +105,10 @@ def GetEpisodes(url):
     fanarts = []
     summaries = []
     for episode in episodes:
-        titles.append(episode.xpath('./text()')[0])
-        urls.append(BASE_URL + episode.get('href'))
+        titles.append(episode.xpath('./h3/a/text()')[0])
+        urls.append(BASE_URL + episode.xpath('./h3/a')[0].get('href'))
         fanarts.append(FanartURL(url.replace(BASE_URL, '')))
         thumbs.append(ThumbURL(url.replace(BASE_URL, '')))
-        summaries.append('')
+        summaries.append(episode.xpath('./p[@class="description"]/span/text()')[0])
     
     return titles, urls, thumbs, fanarts, summaries
