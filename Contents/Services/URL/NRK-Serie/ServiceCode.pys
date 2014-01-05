@@ -39,8 +39,13 @@ def MetadataObjectForURL(url):
     # Extract the details available directly from the page.
     title = response['title']
     summary = response['description']
-    thumb = THUMB_URL % response['relativeOriginUrl']
-    fanart = FANART_URL % response['relativeOriginUrl']
+    if response['images']['webImages'] is not None:
+        thumb = response['images']['webImages'][len(response['images']['webImages'])-2]['imageUrl']
+        fanart = response['images']['webImages'][len(response['images']['webImages'])-1]['imageUrl']
+    else:
+        thumb = THUMB_URL % response['relativeOriginUrl']
+        fanart = FANART_URL % response['relativeOriginUrl']
+
     #Log.Debug('MetadataObjectForURL: ' + title)
     return VideoClipObject(
         title = title,
@@ -53,7 +58,7 @@ def MediaObjectsForURL(url):
     return [
             MediaObject(
                 optimized_for_streaming = True,
-                audio_channels = 2,
+                audio_channels = 6,
                 parts = [
                         PartObject(
                                 key = HTTPLiveStreamURL(Callback(PlayVideo, video_id = video_id))
