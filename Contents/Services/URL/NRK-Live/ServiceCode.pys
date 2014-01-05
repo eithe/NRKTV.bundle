@@ -78,7 +78,7 @@ def MediaObjectsForURL(url):
                 audio_channels = 2,
                 parts = [
                         PartObject(
-                                key = HTTPLiveStreamURL(Callback(PlayVideo, video_id = video_id))
+                                key = HTTPLiveStreamURL(Callback(PlayVideo, video_id = video_id, ext = 'ts'))
                                 #key = HTTPLiveStreamURL(PlayVideo(video_id))
                             )
                         ]
