@@ -60,4 +60,4 @@ Windows (without git installed)
 * Download zip file from here: https://github.com/eithe/NRKTV.bundle/archive/master.zip
 * Unzip the file
 * Rename unzipped folder to NRKTV.bundle
-* Move the NRKTV.bundle folder to C:\Users\\<username>\AppData\Local\Plex Media Server\Plug-ins directory
+* Move the NRKTV.bundle folder to C:\Users\(username)\AppData\Local\Plex Media Server\Plug-ins directory
