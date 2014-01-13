@@ -55,20 +55,22 @@ def MetadataObjectForURL(url):
         art = fanart)
     
 def MediaObjectsForURL(url):
-    video_id = RE_VIDEO_ID.search(url).group()
-    return [
-            MediaObject(
-                optimized_for_streaming = True,
-                audio_channels = 6,
-                parts = [
-                        PartObject(
-                                key = HTTPLiveStreamURL(Callback(PlayVideo, video_id = video_id))
-                                #key = HTTPLiveStreamURL(PlayVideo(video_id))
-                            )
-                        ]
-                )
-            ]
-
+    searchObj = RE_VIDEO_ID.search(url)
+    if searchObj:
+        video_id = searchObj.group()
+        return [
+                MediaObject(
+                    optimized_for_streaming = True,
+                    audio_channels = 2,
+                    parts = [
+                            PartObject(
+                                    key = HTTPLiveStreamURL(Callback(PlayVideo, video_id = video_id))
+                                    #key = HTTPLiveStreamURL(PlayVideo(video_id))
+                                )
+                            ]
+                    )
+                ]
+    
 @indirect
 def PlayVideo(video_id):
     mediaMetadataUrl = API_META_URL % video_id
