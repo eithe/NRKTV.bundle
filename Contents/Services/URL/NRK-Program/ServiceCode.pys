@@ -60,6 +60,7 @@ def MediaObjectsForURL(url):
         video_id = searchObj.group()
         return [
                 MediaObject(
+                    video_resolution = 720,
                     optimized_for_streaming = True,
                     audio_channels = 2,
                     parts = [

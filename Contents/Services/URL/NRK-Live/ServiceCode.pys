@@ -12,7 +12,7 @@
 
 # NRK, if you are watching, don't hesitate to make contact.
 
-
+RE_KEY_URI = Regex('URI *= *"(.*)"')
 API_META_URL = "http://v7.psapi.nrk.no/mediaelement/%s"
 LIVE_TV_STATIONS = (
     {
@@ -74,6 +74,7 @@ def MediaObjectsForURL(url):
     video_id = url.replace('http://tv.nrk.no/direkte/','')
     return [
             MediaObject(
+                video_resolution = 720,
                 optimized_for_streaming = True,
                 audio_channels = 2,
                 parts = [
@@ -85,6 +86,7 @@ def MediaObjectsForURL(url):
                 )
             ]
  
+
 @indirect
 def PlayVideo(video_id):
     mediaMetadataUrl = API_META_URL % video_id
@@ -99,8 +101,12 @@ def PlayVideo(video_id):
         VideoClipObject,
         key = HTTPLiveStreamURL(GetHLSUrl(video_url))
     )    
+
+    #streams = GetHLSStreams(video_url)
+    #Log.Debug("Stream URL: " + streams[0]['url'])
     
-    #return GetHLSUrl(video_url)
+    #return Redirect(Callback(CreatePatchedPlaylist, url = streams[0]['url']))
+    #return Redirect(CreatePatchedPlaylist(streams[0]['url']))
 
 def GetHLSUrl(url):
     streams = GetHLSStreams(url)
@@ -113,6 +119,7 @@ def GetHLSUrl(url):
         raise Ex.MediaNotAvailable
     
     maxBitrateURL = streams[0]["url"]
+    
     return maxBitrateURL
     
     #newPlayList = HTTP.Request(maxBitrateURL, cacheTime=0).content
@@ -149,3 +156,26 @@ def GetHLSStreams(url):
     sorted_streams = sorted(streams, key = lambda stream: stream["bitrate"], reverse = True)        
 
     return sorted_streams
+
+def CreatePatchedPlaylist(url):
+    original_playlist = HTTP.Request(url, cacheTime = 0).content
+    new_playlist = ''
+
+    for line in original_playlist.splitlines():
+        if line.startswith('#EXT-X-KEY'):
+            original_key_url = RE_KEY_URI.search(line).groups()[0]
+            Log.Debug("ORIGINAL KEY URL: " + original_key_url)
+            new_key_url = Callback(ContentOfURL, url = original_key_url)
+            new_playlist = new_playlist + line.replace(original_key_url, new_key_url) + '\n'
+        elif line.startswith('http'):
+            original_segment_url = line
+            new_segment_url = Callback(ContentOfURL, url = original_segment_url)
+            new_playlist = new_playlist + new_segment_url + '\n'
+        else:
+            new_playlist = new_playlist + line + '\n'
+    
+    return new_playlist
+
+def ContentOfURL(url, cookies):
+    return HTTP.Request(url, cacheTime = 0).content
+        
