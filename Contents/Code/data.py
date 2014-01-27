@@ -105,10 +105,12 @@ def GetEpisodes(url):
     fanarts = []
     summaries = []
     for episode in episodes:
-        titles.append(episode.xpath('./h3/a/text()')[0])
-        urls.append(BASE_URL + episode.xpath('./h3/a')[0].get('href'))
-        fanarts.append(FanartURL(url.replace(BASE_URL, '')))
-        thumbs.append(ThumbURL(url.replace(BASE_URL, '')))
-        summaries.append(episode.xpath('./p[@class="description"]/span/text()')[0])
+        titles.append(episode.xpath('//h3/text()')[0])
+        epUrl = BASE_URL + episode.xpath('./a')[0].get('href')
+        Log.Debug("Episode URL: " + epUrl)
+        urls.append(epUrl)
+        fanarts.append(FanartURL(epUrl.replace(BASE_URL, '')))
+        thumbs.append(ThumbURL(epUrl.replace(BASE_URL, '')))
+        summaries.append(episode.xpath('//p[@class="description"]/span/text()')[0])
     
     return titles, urls, thumbs, fanarts, summaries
