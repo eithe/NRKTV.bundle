@@ -75,8 +75,8 @@ def JSONList(url):
             fanarts = [ FanartURL(e['Url']) for e in elems ]
             summaries = [ GetSummary(e['Url']) for e in elems ]
     except:
-        e = sys.exc_info()[0]
-        Log.Error("Error calling: %s. Error: %s" % (url, e))
+        #e = sys.exc_info()[0]
+        Log.Error("Error calling: %s." % url)
     
     return titles, urls, thumbs, fanarts, summaries, index+1, category
         
