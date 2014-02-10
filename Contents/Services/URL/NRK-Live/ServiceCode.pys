@@ -12,6 +12,7 @@
 
 # NRK, if you are watching, don't hesitate to make contact.
 
+SSL_CAPABLE_CLIENTS = ['iOS', 'Roku']
 RE_KEY_URI = Regex('URI *= *"(.*)"')
 API_META_URL = "http://v7.psapi.nrk.no/mediaelement/%s"
 LIVE_TV_STATIONS = (
@@ -79,7 +80,7 @@ def MediaObjectsForURL(url):
                 audio_channels = 2,
                 parts = [
                         PartObject(
-                                key = HTTPLiveStreamURL(Callback(PlayVideo, video_id = video_id, ext = 'ts'))
+                                key = HTTPLiveStreamURL(Callback(PlayVideo, video_id = video_id))
                                 #key = HTTPLiveStreamURL(PlayVideo(video_id))
                             )
                         ]
@@ -87,45 +88,22 @@ def MediaObjectsForURL(url):
             ]
  
 
-@indirect
+
 def PlayVideo(video_id):
     mediaMetadataUrl = API_META_URL % video_id
     user_agent = "Mozilla/5.0 (iPad; U; CPU OS 3_2 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) Version/4.0.4 Mobile/7B334b Safari/531.21.10"
+    
+    #Log.Debug("Client platform: " + str(Client.Platform))
     
     if Client.Platform in USERAGENT_FOR_CLIENTS:
         user_agent = USERAGENT_FOR_CLIENTS[Client.Platform]
         
     video_url = JSON.ObjectFromURL(mediaMetadataUrl, headers={'User-Agent': user_agent}, cacheTime=0)['mediaUrl']
-
-    return IndirectResponse(
-        VideoClipObject,
-        key = HTTPLiveStreamURL(GetHLSUrl(video_url))
-    )    
-
-    #streams = GetHLSStreams(video_url)
-    #Log.Debug("Stream URL: " + streams[0]['url'])
     
-    #return Redirect(Callback(CreatePatchedPlaylist, url = streams[0]['url']))
-    #return Redirect(CreatePatchedPlaylist(streams[0]['url']))
+    streams = GetHLSStreams(video_url)
 
-def GetHLSUrl(url):
-    streams = GetHLSStreams(url)
-
-    # Return highest bitrate url
-    # Also consider a client not identifying itself as needing help,
-    # the Samsung client is one of those. 
-
-    if len(streams) < 1:
-        raise Ex.MediaNotAvailable
-    
-    maxBitrateURL = streams[0]["url"]
-    
-    return maxBitrateURL
-    
-    #newPlayList = HTTP.Request(maxBitrateURL, cacheTime=0).content
-    #Log.Debug("NEW PLAYLIST: " + newPlayList)
-    #return newPlayList        
-
+    return Redirect(streams[0]['url'])
+                
 def GetHLSStreams(url):
     streams = []
 
@@ -164,18 +142,22 @@ def CreatePatchedPlaylist(url):
     for line in original_playlist.splitlines():
         if line.startswith('#EXT-X-KEY'):
             original_key_url = RE_KEY_URI.search(line).groups()[0]
-            Log.Debug("ORIGINAL KEY URL: " + original_key_url)
-            new_key_url = Callback(ContentOfURL, url = original_key_url)
-            new_playlist = new_playlist + line.replace(original_key_url, new_key_url) + '\n'
+            #Log.Debug("ORIGINAL KEY URL: " + original_key_url)
+            #new_key_url = Callback(ContentOfURL, url = original_key_url)
+            #new_key_url = ContentOfURL(original_key_url)
+            #Log.Debug("NEW KEY URL: " + new_key_url)
+            #new_playlist = new_playlist + line.replace(original_key_url, new_key_url) + '\n'
         elif line.startswith('http'):
             original_segment_url = line
-            new_segment_url = Callback(ContentOfURL, url = original_segment_url)
+            #Log.Debug("ORIGINAL SEGMENT URL: " + original_segment_url)
+            #new_segment_url = Callback(ContentOfURL, url = original_segment_url)
+            new_segment_url = original_segment_url
             new_playlist = new_playlist + new_segment_url + '\n'
         else:
             new_playlist = new_playlist + line + '\n'
     
     return new_playlist
 
-def ContentOfURL(url, cookies):
+def ContentOfURL(url):
     return HTTP.Request(url, cacheTime = 0).content
         
