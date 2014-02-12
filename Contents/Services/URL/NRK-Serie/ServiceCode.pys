@@ -12,6 +12,9 @@
 
 # NRK, if you are watching, don't hesitate to make contact.
 
+SSL_CAPABLE_CLIENTS = [ClientPlatform.iOS, ClientPlatform.MacOSX]
+RE_KEY_URI = Regex('URI *= *"(.*)"')
+USER_AGENT = 'AppleCoreMedia/1.0.0.11A501 (iPad; U; CPU OS 7_0_2 like Mac OS X; en_us)'
 THUMB_URL = "http://nrk.eu01.aws.af.cm/t/%s"
 FANART_URL = "http://nrk.eu01.aws.af.cm/f/%s"
 API_META_URL = "http://v7.psapi.nrk.no/mediaelement/%s"
@@ -72,7 +75,6 @@ def MediaObjectsForURL(url):
                 ]
 
 
-@indirect
 def PlayVideo(video_id):
     mediaMetadataUrl = API_META_URL % video_id
     user_agent = "Mozilla/5.0 (iPad; U; CPU OS 3_2 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) Version/4.0.4 Mobile/7B334b Safari/531.21.10"
@@ -82,29 +84,13 @@ def PlayVideo(video_id):
         
     video_url = JSON.ObjectFromURL(mediaMetadataUrl, headers={'User-Agent': user_agent})['mediaUrl']
 
-    return IndirectResponse(
-        VideoClipObject,
-        key = HTTPLiveStreamURL(GetHLSUrl(video_url))
-    )    
+    streams = GetHLSStreams(video_url)
 
-    #return GetHLSUrl(video_url)
-
-def GetHLSUrl(url):
-    streams = GetHLSStreams(url)
-
-    # Return highest bitrate url since PMC can't handle HLS correctly
-    # Also consider a client not identifying itself as needing help,
-    # the Samsung client is one of those. 
-
-    if len(streams) < 1:
-        raise Ex.MediaNotAvailable
-    
-    maxBitrateURL = streams[0]["url"]
-    return maxBitrateURL
-    
-    #newPlayList = HTTP.Request(maxBitrateURL).content
-
-    #return newPlayList        
+    if Client.Platform in SSL_CAPABLE_CLIENTS:
+        return Redirect(streams[0]['url'])
+    else:
+        cookies = HTTP.CookiesForURL(video_url)
+        return Redirect(Callback(CreatePatchedPlaylist, url = streams[0]['url'], cookies = cookies))
 
 def GetHLSStreams(url):
     streams = []
@@ -136,3 +122,33 @@ def GetHLSStreams(url):
     sorted_streams = sorted(streams, key = lambda stream: stream["bitrate"], reverse = True)        
 
     return sorted_streams
+
+def CreatePatchedPlaylist(url, cookies):
+    headers               = {}
+    headers['Cookie']     = cookies
+    headers['User-Agent'] = USER_AGENT
+
+    original_playlist = HTTP.Request(url, headers = headers, cacheTime = 0).content
+
+    new_playlist = ''
+
+    for line in original_playlist.splitlines():
+        if line.startswith('#EXT-X-KEY'):
+            original_key_url = RE_KEY_URI.search(line).groups()[0]
+            new_key_url = Callback(ContentOfURL, url = original_key_url, cookies = cookies)
+            new_playlist = new_playlist + line.replace(original_key_url, new_key_url) + '\n'
+        elif line.startswith('http'):
+            original_segment_url = line
+            new_segment_url = Callback(ContentOfURL, url = original_segment_url, cookies = cookies)
+            new_playlist = new_playlist + new_segment_url + '\n'
+        else:
+            new_playlist = new_playlist + line + '\n'
+    
+    return new_playlist
+
+def ContentOfURL(url, cookies):
+    headers               = {}
+    headers['Cookie']     = cookies
+    headers['User-Agent'] = USER_AGENT
+    
+    return HTTP.Request(url, cacheTime = 0).content

@@ -12,8 +12,9 @@
 
 # NRK, if you are watching, don't hesitate to make contact.
 
-SSL_CAPABLE_CLIENTS = ['iOS', 'Roku']
+SSL_CAPABLE_CLIENTS = [ClientPlatform.iOS, ClientPlatform.MacOSX]
 RE_KEY_URI = Regex('URI *= *"(.*)"')
+USER_AGENT = 'AppleCoreMedia/1.0.0.11A501 (iPad; U; CPU OS 7_0_2 like Mac OS X; en_us)'
 API_META_URL = "http://v7.psapi.nrk.no/mediaelement/%s"
 LIVE_TV_STATIONS = (
     {
@@ -102,7 +103,12 @@ def PlayVideo(video_id):
     
     streams = GetHLSStreams(video_url)
 
-    return Redirect(streams[0]['url'])
+    if Client.Platform in SSL_CAPABLE_CLIENTS:
+        return Redirect(streams[0]['url'])
+    else:
+        cookies = HTTP.CookiesForURL(video_url)
+        return Redirect(Callback(CreatePatchedPlaylist, url = streams[0]['url'], cookies = cookies))
+
                 
 def GetHLSStreams(url):
     streams = []
@@ -135,29 +141,33 @@ def GetHLSStreams(url):
 
     return sorted_streams
 
-def CreatePatchedPlaylist(url):
-    original_playlist = HTTP.Request(url, cacheTime = 0).content
+def CreatePatchedPlaylist(url, cookies):
+    headers               = {}
+    headers['Cookie']     = cookies
+    headers['User-Agent'] = USER_AGENT
+
+    original_playlist = HTTP.Request(url, headers = headers, cacheTime = 0).content
+
     new_playlist = ''
 
     for line in original_playlist.splitlines():
         if line.startswith('#EXT-X-KEY'):
             original_key_url = RE_KEY_URI.search(line).groups()[0]
-            #Log.Debug("ORIGINAL KEY URL: " + original_key_url)
-            #new_key_url = Callback(ContentOfURL, url = original_key_url)
-            #new_key_url = ContentOfURL(original_key_url)
-            #Log.Debug("NEW KEY URL: " + new_key_url)
-            #new_playlist = new_playlist + line.replace(original_key_url, new_key_url) + '\n'
+            new_key_url = Callback(ContentOfURL, url = original_key_url, cookies = cookies)
+            new_playlist = new_playlist + line.replace(original_key_url, new_key_url) + '\n'
         elif line.startswith('http'):
             original_segment_url = line
-            #Log.Debug("ORIGINAL SEGMENT URL: " + original_segment_url)
-            #new_segment_url = Callback(ContentOfURL, url = original_segment_url)
-            new_segment_url = original_segment_url
+            new_segment_url = Callback(ContentOfURL, url = original_segment_url, cookies = cookies)
             new_playlist = new_playlist + new_segment_url + '\n'
         else:
             new_playlist = new_playlist + line + '\n'
     
     return new_playlist
 
-def ContentOfURL(url):
+def ContentOfURL(url, cookies):
+    headers               = {}
+    headers['Cookie']     = cookies
+    headers['User-Agent'] = USER_AGENT
+    
     return HTTP.Request(url, cacheTime = 0).content
         

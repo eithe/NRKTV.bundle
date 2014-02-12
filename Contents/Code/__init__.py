@@ -20,7 +20,7 @@ from podcasts import *
 ####################################################################################################
 
 # Just a small list currently supports SSL HTTP Live Streams
-SSL_CAPABLE_CLIENTS = ['iOS', 'Roku']
+SSL_CAPABLE_CLIENTS = [ClientPlatform.iOS, ClientPlatform.MacOSX]
 
 def Start():
     Plugin.AddPrefixHandler(VIDEO_PREFIX, MainMenu, NAME, ICON_DEFAULT, ART_DEFAULT)
@@ -66,12 +66,11 @@ def MainMenu():
 def TVMenu():
     oc = ObjectContainer()
     
-    if Client.Platform in SSL_CAPABLE_CLIENTS:
-        oc.add(DirectoryObject(
-            key = Callback(LiveTVMenu),
-            title=unicode(L('livetv_title')), 
-            summary=unicode(L('livetv_description')), 
-            thumb=R('nrk-nett-tv.png')))
+    oc.add(DirectoryObject(
+        key = Callback(LiveTVMenu),
+        title=unicode(L('livetv_title')), 
+        summary=unicode(L('livetv_description')), 
+        thumb=R('nrk-nett-tv.png')))
 
     oc.add(DirectoryObject(
         key = Callback(Recommended),
