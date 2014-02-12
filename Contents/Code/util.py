@@ -19,7 +19,7 @@ VIDEO_PREFIX = "/video/nrktv"
 NAME = unicode(L('title'))
 
 BASE_URL = "http://tv.nrk.no"
-MEDIAELEMENT_URL_JSON = 'http://v7.psapi.nrk.no/mediaelement/%s'
+JSON_URL_MEDIAELEMENT = 'http://v7.psapi.nrk.no/mediaelement/%s'
 # make sure to replace artwork with what you want
 # these filenames reference the example files in
 # the Contents/Resources/ folder in the bundle
@@ -102,9 +102,9 @@ def ProgramList(url):
 def FanartURL(url):
     fUrl = url.replace(BASE_URL, '')
     if '/serie/' in url:
-        fUrl = "http://nrk.eu01.aws.af.cm/f/%s" % url.lstrip('/')
+        fUrl = "http://nrk.eu01.aws.af.cm/f/%s" % fUrl.lstrip('/')
     elif '/Episodes/' in url:
-        fUrl = "http://nrk.eu01.aws.af.cm/f/%s" % url.split('/')[3]
+        fUrl = "http://nrk.eu01.aws.af.cm/f/%s" % fUrl.split('/')[3]
     else:
         fUrl = ''
     
@@ -114,22 +114,21 @@ def FanartURL(url):
 def ThumbURL(url):
     tUrl = url.replace(BASE_URL, '')
     if '/Episodes/' in url:
-        tUrl = "http://nrk.eu01.aws.af.cm/t/%s" % url.split('/')[3]
+        tUrl = "http://nrk.eu01.aws.af.cm/t/%s" % tUrl.split('/')[3]
     else:
-        tUrl = "http://nrk.eu01.aws.af.cm/t/%s" % url.lstrip('/')
+        tUrl = "http://nrk.eu01.aws.af.cm/t/%s" % tUrl.lstrip('/')
 
     #Log.Debug("THUMB URL: " + tUrl)
     return tUrl
     
 # Too slow at the moment. Needs caching
-def GetSummary(url):
-    return ''
+def GetProgramInfo(url):
     matchObj = re.search( r'\w{4}\d{8}', url, re.M|re.I)
     if matchObj:
-        metaurl = "http://v7.psapi.nrk.no/mediaelement/%s" % matchObj.group()
+        metaurl = JSON_URL_MEDIAELEMENT % matchObj.group()
         try:
-            return JSON.ObjectFromURL(metaurl)['description']
+            return JSON.ObjectFromURL(metaurl)
         except:
-            return ''
+            return None
     else:
-        return ''
+        return None

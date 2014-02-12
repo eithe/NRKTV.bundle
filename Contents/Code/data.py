@@ -16,7 +16,6 @@ from util import *
 import httplib, urllib
 
 PROGRAM_URL = Regex('\/program\/([^\/]+)')
-PROGRAM_IMAGE_BASE_URL = 'http://nrk.eu01.aws.af.cm/f/%s'
 PROGRAM_LETTER_BASE_URL = BASE_URL + '/programmer/%s'
 PROGRAM_CATEGORY_BASE_URL = BASE_URL + '/programmer/%s'
 PROGRAM_CATEGORY_LETTER_BASE_URL = PROGRAM_CATEGORY_BASE_URL + '/%s'
@@ -71,13 +70,13 @@ def GetMostPopularMonth():
     return JSONList(JSON_URL_POPULAR_MONTH)
 
 def GetSeasons(url):
-    #Log.Debug("URL: " + url)
+    Log.Debug("GetSeasons URL: " + url)
     html = HTML.ElementFromURL(url)
 
     programId = html.xpath("/html/head/meta[@name='programid']")
     urlSlashSplit = url.split("/")
     seriesName = urlSlashSplit[len(urlSlashSplit)-1]
-
+    
     seasons = html.xpath("//a[@class='buttonbar-link ga season-link']")
     #Log.Debug("Seasons: " + str(seasons))
     titles = []
@@ -88,14 +87,14 @@ def GetSeasons(url):
     for season in seasons:
         titles.append(season.xpath('./text()')[0])
         urls.append(BASE_URL + season.get('href'))
-        fanarts.append(FanartURL(url.replace(BASE_URL, '')))
-        thumbs.append(ThumbURL(url.replace(BASE_URL, '')))
+        fanarts.append(FanartURL(url))
+        thumbs.append(ThumbURL(url))
         summaries.append('')
     
     return titles, urls, thumbs, fanarts, summaries
 
 def GetEpisodes(url):
-    #Log.Debug("URL: " + url)
+    #Log.Debug("GetEpisodes URL: " + url)
     html = HTML.ElementFromURL(url, headers = {'X-Requested-With':'XMLHttpRequest'})
     episodes = html.xpath("//li[@data-episode] [not(contains(@class, 'no-rights'))]") #//a[not(contains(@id, 'xx'))]
     #Log.Debug("Episodes: " + str(episodes))
@@ -105,13 +104,20 @@ def GetEpisodes(url):
     fanarts = []
     summaries = []
     for episode in episodes:
-        titles.append(episode.xpath('./a/div/h3/text()')[0])
         epUrl = BASE_URL + episode.xpath('./a')[0].get('href')
-        #Log.Debug("Episode URL: " + epUrl)
+        programInfoObj = GetProgramInfo(epUrl)
         urls.append(epUrl)
-        #fanarts.append(episode)
-        fanarts.append(FanartURL(epUrl.replace(BASE_URL, '')))
-        thumbs.append(ThumbURL(epUrl.replace(BASE_URL, '')))
-        summaries.append(episode.xpath('./a/div/p[@class="description"]/span/text()')[0])
+
+        #Log.Debug("OBJECT: " + str(programInfoObj))
+        if programInfoObj is not None and programInfoObj['images']['webImages'] is not None:
+            titles.append(programInfoObj['fullTitle'])
+            thumbs.append(programInfoObj['images']['webImages'][len(programInfoObj['images']['webImages'])-2]['imageUrl'])
+            fanarts.append(programInfoObj['images']['webImages'][len(programInfoObj['images']['webImages'])-1]['imageUrl'])
+            summaries.append(programInfoObj['description'])
+        else:
+            titles.append(episode.xpath('./a/div/h3/text()')[0])
+            fanarts.append(FanartURL(epUrl.replace(BASE_URL, '')))
+            thumbs.append(ThumbURL(epUrl.replace(BASE_URL, '')))
+            summaries.append(episode.xpath('./a/div/p[@class="description"]/span/text()')[0])
     
     return titles, urls, thumbs, fanarts, summaries

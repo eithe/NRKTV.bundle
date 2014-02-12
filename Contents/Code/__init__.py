@@ -181,15 +181,16 @@ def Letters():
             url = letter
         
         oc.add(DirectoryObject(
-            key = Callback(Letter, letterUrl = url),
-            title = letter))
+            key = Callback(Letter, letterUrl = url, letter = letter),
+            title = letter,
+            thumb = R('%s.png' % letter)))
 
     if len(oc) == 0:
          oc.add(emptyItem())
     return oc
 
-@route(pluginRoute('/letter/{x}'))
-def Letter(letterUrl):
+@route(pluginRoute('/letter/{letter}'))
+def Letter(letterUrl, letter):
     import data
     return View(*data.GetByLetter(letterUrl))
     
@@ -198,21 +199,22 @@ def Categories():
     import data
     return View(*data.GetCategories())
 
-@route(pluginRoute('/category/{x}'))
-def Category(url, index = 0):
+@route(pluginRoute('/category/{category}'))
+def Category(url, category, index = 0):
     import data
+    url = BASE_URL + url
     splitUrl = url.split("/")
     category = splitUrl[len(splitUrl)-1]
     #Log.Debug("CATEGORY: " + str(category))
     return View(*data.GetByCategory(category, index))
 
-@route(pluginRoute('/series/{x}'))
-def Series(url): 
+@route(pluginRoute('/series/{seriesName}'))
+def Series(url, seriesName): 
     import data
     return View(*data.GetSeasons(url))
 
-@route(pluginRoute('/episodes/{x}'))
-def Episodes(url): 
+@route(pluginRoute('/episodes/{id}'))
+def Episodes(url, id): 
     import data
     return View(*data.GetEpisodes(url))
 
@@ -232,23 +234,28 @@ def View(titles, urls, thumbs=repeat(''), fanarts=repeat(''), summaries=repeat('
         
         if '/Episodes/' in url:
             #Log.Debug("Episodes: " + url)
+            urlSplit = url.split('/') #/petter-kanin/38617/msui26001511
+            id = urlSplit[len(urlSplit)-1]
+            #Log.Debug("SeasonPath: " + seasonPath)
             oc.add(DirectoryObject(
-            key = Callback(Episodes, url = url), title = unicode(title), thumb = thumb, art = fanart))
+            key = Callback(Episodes, url = url, id = id), title = unicode(title), thumb = thumb, art = fanart))
         elif '/program/' in url or re.search( r'/\w{4}\d{8}/', url, re.M|re.I): #koid24002713 Playable:
             #Log.Debug("Program: " + url)
             oc.add(VideoClipObject(url = url, title = unicode(title), thumb = thumb, art = fanart, summary = summary))
         elif '/programmer/' in url:
             #Log.Debug("Program: " + url)
+            cat = url.split('/')[4] #'barn'
             oc.add(DirectoryObject(
-            key = Callback(Category, url = url, index = index), title = unicode(title), thumb = R('nrk-nett-tv.png'), art = fanart))
+            key = Callback(Category, url = url, category = cat, index = index), title = unicode(title), thumb = R('nrk-nett-tv.png'), art = fanart))
         else:
             #Log.Debug("Series: " + url)
+            seriesName = url.split('/')[4] #http://tv.nrk.no/serie/albert-aaberg
             oc.add(DirectoryObject(
-            key = Callback(Series, url = url), title = unicode(title), thumb = thumb, art = fanart))
+            key = Callback(Series, url = url, seriesName = seriesName), title = unicode(title), thumb = thumb, art = fanart))
     
     if index > 0: #Add paging object
         oc.add(DirectoryObject(
-            key = Callback(Category, url = BASE_URL + '/programmer/%s' % category, index = index), title = unicode(L("paging_next")), thumb = R('arrow-right.png'), art = fanart))
+            key = Callback(Category, url = BASE_URL + '/programmer/%s' % category, category = category, index = index), title = unicode(L("paging_next")), thumb = R('arrow-right.png'), art = fanart))
     
     return oc
     
