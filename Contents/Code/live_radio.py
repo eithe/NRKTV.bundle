@@ -21,7 +21,7 @@ LIVE_RADIO_STATIONS = (
     ('p2', u'P2', u'Kulturkanalen med kunst, kultur, nyheter, debatt og samfunnsstoff.'),
     ('p3', u'P3', u'Ungdomskanal med mye pop og rock-musikk, humor og skreddersydde nyheter for de unge.'),
     ('mp3', u'mPetre', u'Musikk for de yngre.'),
-    ('p13', u'P13', u'Underholdningskanalen for rock og tilliggende sjangrer.')
+    ('p13', u'P13', u'Underholdningskanalen for rock og tilliggende sjangrer.'),
     ('alltid_nyheter', u'Alltid Nyheter', u'Hyppige nyhetsoppdateringer - BBC kveld/natt.'),
     ('radio_super', u'Super', u'Barnetilbud.'),
     ('klassisk', u'Klassisk', u'Klassisk musikk døgnet rundt'),
