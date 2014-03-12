@@ -97,7 +97,7 @@ def TVMenu():
         summary=unicode(L('letters_description')), 
         thumb=R('nrk-nett-tv.png')))
     
-    oc.add(SearchDirectoryObject(identifier="com.plexapp.plugins.nrktv", title=unicode(L("search_title")), prompt=unicode(L("search_prompt")))) 
+    oc.add(SearchDirectoryObject(identifier="com.plexapp.plugins.nrk", title=unicode(L("search_title")), prompt=unicode(L("search_prompt")))) 
     
     return oc
 
@@ -234,7 +234,7 @@ def View(titles, urls, thumbs=repeat(''), fanarts=repeat(''), summaries=repeat('
             #Log.Debug("SeasonPath: " + seasonPath)
             oc.add(DirectoryObject(
             key = Callback(Episodes, url = url, id = id), title = unicode(title), thumb = thumb, art = fanart))
-        elif '/program/' in url or re.search( r'/\w{4}\d{8}/', url, re.M|re.I): #koid24002713 Playable:
+        elif '/program/' in url or RE_PROG_INFO.search(url): #koid24002713 Playable:
             #Log.Debug("Program: " + url)
             oc.add(VideoClipObject(url = url, title = unicode(title), thumb = thumb, art = fanart, summary = summary))
         elif '/programmer/' in url:
