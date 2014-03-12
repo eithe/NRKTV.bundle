@@ -1,8 +1,8 @@
 [
 	{
-			"id":           "subtitles",
-			"label":        "prefs_subtitles",
-            "type":         "bool",
-            "default":      "false",
-    }
+		"id": "subtitles",
+		"label": "prefs_subtitles",
+		"type": "bool",
+		"default": "false"
+	}
 ]

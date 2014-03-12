@@ -23,13 +23,7 @@ from podcasts import *
 SSL_CAPABLE_CLIENTS = [ClientPlatform.iOS, ClientPlatform.MacOSX]
 
 def Start():
-    Plugin.AddPrefixHandler(VIDEO_PREFIX, MainMenu, NAME, ICON_DEFAULT, ART_DEFAULT)
-
-    Plugin.AddViewGroup("InfoList", viewMode="InfoList", mediaType="items")
-    Plugin.AddViewGroup("List", viewMode="List", mediaType="items")
-
     ObjectContainer.art = R(ART_DEFAULT)
-    ObjectContainer.view_group = "InfoList"
     ObjectContainer.title1 = NAME
 
     EpisodeObject.art = R(ART_DEFAULT)
@@ -38,7 +32,8 @@ def Start():
     HTTP.CacheTime = CACHE_1HOUR
     #HTTP.Headers['X-Requested-With'] = 'XMLHttpRequest'
     HTTP.Headers['Cookie'] = 'NRK_PLAYER_SETTINGS_TV=devicetype=desktop&preferred-player-odm=hlslink&preferred-player-live=hlslink'
-    
+
+@handler(VIDEO_PREFIX, NAME, thumb=ICON_DEFAULT, art=ART_DEFAULT)
 def MainMenu():
     oc = ObjectContainer()
     
