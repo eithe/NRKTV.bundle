@@ -74,7 +74,7 @@ def JSONList(url):
             urls = [ BASE_URL + e['Url'] for e in elems ]
             thumbs = [ e['Images'][0]['ImageUrl'] for e in elems ]
             fanarts = [ FanartURL(e['Url']) for e in elems ]
-            summaries = [ GetSummary(e['Url']) for e in elems ]
+            summaries = [ GetProgramInfo(e['Url']) for e in elems ]
     except:
         #e = sys.exc_info()[0]
         Log.Error("Error calling: %s." % url)
