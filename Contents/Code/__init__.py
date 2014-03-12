@@ -260,6 +260,6 @@ def View(titles, urls, thumbs=repeat(''), fanarts=repeat(''), summaries=repeat('
     return oc
     
 def ValidatePrefs():
-    return MessageContainer(
-        unicode(L("prefs_success_title")),
-        unicode(L("prefs_success_description")))
+    return ObjectContainer(
+        header=unicode(L("prefs_success_title")),
+        message=unicode(L("prefs_success_description")))
