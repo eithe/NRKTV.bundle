@@ -12,8 +12,6 @@
 
 # NRK, if you are watching, don't hesitate to make contact.
 
-import re
-
 VIDEO_PREFIX = "/video/nrktv"
 
 NAME = unicode(L('title'))
@@ -25,6 +23,9 @@ JSON_URL_MEDIAELEMENT = 'http://v7.psapi.nrk.no/mediaelement/%s'
 # the Contents/Resources/ folder in the bundle
 ART_DEFAULT  = 'art-default.png'
 ICON_DEFAULT = 'icon-default.png'
+
+RE_PROG_INFO = Regex(r'\w{4}\d{8}', Regex.MULTILINE|Regex.IGNORECASE)
+
 
 def pluginRoute(route):
     return VIDEO_PREFIX + route
@@ -123,7 +124,7 @@ def ThumbURL(url):
     
 # Too slow at the moment. Needs caching
 def GetProgramInfo(url):
-    matchObj = re.search( r'\w{4}\d{8}', url, re.M|re.I)
+    matchObj = RE_PROG_INFO.search(url)
     if matchObj:
         metaurl = JSON_URL_MEDIAELEMENT % matchObj.group()
         try:

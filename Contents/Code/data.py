@@ -13,7 +13,6 @@
 # NRK, if you are watching, don't hesitate to make contact.
 
 from util import *
-import httplib, urllib
 
 PROGRAM_URL = Regex('\/program\/([^\/]+)')
 PROGRAM_LETTER_BASE_URL = BASE_URL + '/programmer/%s'
