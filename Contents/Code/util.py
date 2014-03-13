@@ -74,7 +74,7 @@ def JSONList(url):
             urls = [ BASE_URL + e['Url'] for e in elems ]
             thumbs = [ e['Images'][0]['ImageUrl'] for e in elems ]
             fanarts = [ FanartURL(e['Url']) for e in elems ]
-            summaries = [ GetProgramInfo(e['Url']) for e in elems ]
+            summaries = [(e['Title']) for e in elems ]
     except:
         #e = sys.exc_info()[0]
         Log.Error("Error calling: %s." % url)
@@ -121,6 +121,9 @@ def ThumbURL(url):
 
     #Log.Debug("THUMB URL: " + tUrl)
     return tUrl
+
+def GetSummary(url):
+    return ''
     
 # Too slow at the moment. Needs caching
 def GetProgramInfo(url):
