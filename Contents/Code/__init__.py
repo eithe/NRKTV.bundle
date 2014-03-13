@@ -23,13 +23,7 @@ from podcasts import *
 SSL_CAPABLE_CLIENTS = [ClientPlatform.iOS, ClientPlatform.MacOSX]
 
 def Start():
-    Plugin.AddPrefixHandler(VIDEO_PREFIX, MainMenu, NAME, ICON_DEFAULT, ART_DEFAULT)
-
-    Plugin.AddViewGroup("InfoList", viewMode="InfoList", mediaType="items")
-    Plugin.AddViewGroup("List", viewMode="List", mediaType="items")
-
     ObjectContainer.art = R(ART_DEFAULT)
-    ObjectContainer.view_group = "InfoList"
     ObjectContainer.title1 = NAME
 
     EpisodeObject.art = R(ART_DEFAULT)
@@ -38,7 +32,8 @@ def Start():
     HTTP.CacheTime = CACHE_1HOUR
     #HTTP.Headers['X-Requested-With'] = 'XMLHttpRequest'
     HTTP.Headers['Cookie'] = 'NRK_PLAYER_SETTINGS_TV=devicetype=desktop&preferred-player-odm=hlslink&preferred-player-live=hlslink'
-    
+
+@handler(VIDEO_PREFIX, NAME, thumb=ICON_DEFAULT, art=ART_DEFAULT)
 def MainMenu():
     oc = ObjectContainer()
     
@@ -102,7 +97,7 @@ def TVMenu():
         summary=unicode(L('letters_description')), 
         thumb=R('nrk-nett-tv.png')))
     
-    oc.add(SearchDirectoryObject(identifier="com.plexapp.plugins.nrktv", title=unicode(L("search_title")), prompt=unicode(L("search_prompt")))) 
+    oc.add(SearchDirectoryObject(identifier="com.plexapp.plugins.nrk", title=unicode(L("search_title")), prompt=unicode(L("search_prompt")))) 
     
     return oc
 
@@ -239,7 +234,7 @@ def View(titles, urls, thumbs=repeat(''), fanarts=repeat(''), summaries=repeat('
             #Log.Debug("SeasonPath: " + seasonPath)
             oc.add(DirectoryObject(
             key = Callback(Episodes, url = url, id = id), title = unicode(title), thumb = thumb, art = fanart))
-        elif '/program/' in url or re.search( r'/\w{4}\d{8}/', url, re.M|re.I): #koid24002713 Playable:
+        elif '/program/' in url or RE_PROG_INFO.search(url): #koid24002713 Playable:
             #Log.Debug("Program: " + url)
             oc.add(VideoClipObject(url = url, title = unicode(title), thumb = thumb, art = fanart, summary = summary))
         elif '/programmer/' in url:
@@ -260,6 +255,6 @@ def View(titles, urls, thumbs=repeat(''), fanarts=repeat(''), summaries=repeat('
     return oc
     
 def ValidatePrefs():
-    return MessageContainer(
-        unicode(L("prefs_success_title")),
-        unicode(L("prefs_success_description")))
+    return ObjectContainer(
+        header=unicode(L("prefs_success_title")),
+        message=unicode(L("prefs_success_description")))
