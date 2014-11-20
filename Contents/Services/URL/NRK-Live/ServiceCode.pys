@@ -15,24 +15,24 @@
 SSL_CAPABLE_CLIENTS = [ClientPlatform.iOS, ClientPlatform.MacOSX]
 RE_KEY_URI = Regex('URI *= *"(.*)"')
 USER_AGENT = 'AppleCoreMedia/1.0.0.11A501 (iPad; U; CPU OS 7_0_2 like Mac OS X; en_us)'
-API_META_URL = "http://v7.psapi.nrk.no/mediaelement/%s"
+API_META_URL = "http://v8.psapi.nrk.no/mediaelement/%s"
 LIVE_TV_STATIONS = (
     {
-        'title': 'NRK 1', 
+        'title': 'NRK 1',
         'url': 'http://tv.nrk.no/direkte/nrk1',
-        'desc': u'Bredt og variert programtilbud. Norges største tv-kanal.', 
+        'desc': u'Bredt og variert programtilbud. Norges største tv-kanal.',
         'img': 'nrk1.png'
     },
     {
-        'title': 'NRK 2', 
+        'title': 'NRK 2',
         'url': 'http://tv.nrk.no/direkte/nrk2',
-        'desc': u'Fordypningskanalen. Bakgrunns-, dokumentar og nyhetskanal.', 
+        'desc': u'Fordypningskanalen. Bakgrunns-, dokumentar og nyhetskanal.',
         'img': 'nrk2.png'
-    }, 
+    },
     {
-        'title': 'NRK Super / NRK 3', 
+        'title': 'NRK Super / NRK 3',
         'url': 'http://tv.nrk.no/direkte/nrk3',
-        'desc': u'Den tredje kanalen tilbyr vekselsvis et barnetilbud og et tilbud for unge voksne med serier, humor film.', 
+        'desc': u'Den tredje kanalen tilbyr vekselsvis et barnetilbud og et tilbud for unge voksne med serier, humor film.',
         'img': 'nrk3.png'
     }
 )
@@ -60,18 +60,18 @@ def MetadataObjectForURL(url):
         station = LIVE_TV_STATIONS[1]
     else:
         station = LIVE_TV_STATIONS[2]
-    
+
     title = station['title']
     summary = station['desc']
     thumb = R(station['img'])
     fanart = R(station['img'])
-    
+
     return VideoClipObject(
         title = title,
         summary = summary,
         thumb = thumb,
         art = fanart)
-    
+
 def MediaObjectsForURL(url):
     video_id = url.replace('http://tv.nrk.no/direkte/','')
     return [
@@ -87,20 +87,20 @@ def MediaObjectsForURL(url):
                         ]
                 )
             ]
- 
+
 
 
 def PlayVideo(video_id):
     mediaMetadataUrl = API_META_URL % video_id
     user_agent = "Mozilla/5.0 (iPad; U; CPU OS 3_2 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) Version/4.0.4 Mobile/7B334b Safari/531.21.10"
-    
+
     #Log.Debug("Client platform: " + str(Client.Platform))
-    
+
     if Client.Platform in USERAGENT_FOR_CLIENTS:
         user_agent = USERAGENT_FOR_CLIENTS[Client.Platform]
-        
+
     video_url = JSON.ObjectFromURL(mediaMetadataUrl, headers={'User-Agent': user_agent}, cacheTime=0)['mediaUrl']
-    
+
     streams = GetHLSStreams(video_url)
 
     if Client.Platform in SSL_CAPABLE_CLIENTS:
@@ -109,13 +109,13 @@ def PlayVideo(video_id):
         cookies = HTTP.CookiesForURL(video_url)
         return Redirect(Callback(CreatePatchedPlaylist, url = streams[0]['url'], cookies = cookies))
 
-                
+
 def GetHLSStreams(url):
     streams = []
 
     playList = HTTP.Request(url, cacheTime=0).content
     #Log.Debug("M3U8: " + playList)
-    
+
     stream = {}
     # Parse the m3u8 file to get:
     # - URL
@@ -125,19 +125,19 @@ def GetHLSStreams(url):
         if "BANDWIDTH" in line:
             stream            = {}
             stream["bitrate"] = int(Regex('(?<=BANDWIDTH=)[0-9]+').search(line).group(0))
-		
+
         elif line.startswith("#"):
             pass
-		
+
         elif "b.m3u8" in line:
             path = ''
             if not line.startswith("http"):
                 path = url[ : url.rfind('/') + 1]
-			
+
             stream["url"] = path + line
             streams.append(stream)
-                
-    sorted_streams = sorted(streams, key = lambda stream: stream["bitrate"], reverse = True)        
+
+    sorted_streams = sorted(streams, key = lambda stream: stream["bitrate"], reverse = True)
 
     return sorted_streams
 
@@ -161,13 +161,16 @@ def CreatePatchedPlaylist(url, cookies):
             new_playlist = new_playlist + new_segment_url + '\n'
         else:
             new_playlist = new_playlist + line + '\n'
-    
+
+    #Log.Debug("Original M3U8: " + original_playlist)
+    #Log.Debug("Patched M3U8: " + new_playlist)
+
     return new_playlist
 
 def ContentOfURL(url, cookies):
     headers               = {}
     headers['Cookie']     = cookies
     headers['User-Agent'] = USER_AGENT
-    
+
     return HTTP.Request(url, cacheTime = 0).content
-        
+

@@ -53,7 +53,7 @@ def GetCategories():
     "Kultur og underholdning", "Nyheter", "Samisk", "Sport", "Tegnspråk" ]
   urls = [ PROGRAM_CATEGORY_BASE_URL % "barn", PROGRAM_CATEGORY_BASE_URL % "dokumentar-og-fakta", PROGRAM_CATEGORY_BASE_URL % "filmer-og-serier", PROGRAM_CATEGORY_BASE_URL % "helse-forbruker-og-livsstil",
     PROGRAM_CATEGORY_BASE_URL % "kultur-og-underholdning", PROGRAM_CATEGORY_BASE_URL % "nyheter", PROGRAM_CATEGORY_BASE_URL % "samisk", PROGRAM_CATEGORY_BASE_URL % "sport", PROGRAM_CATEGORY_BASE_URL % "tegnspraak" ]
-  
+
   return titles, urls
 
 def GetByCategory(category, index):
@@ -75,7 +75,7 @@ def GetSeasons(url):
     programId = html.xpath("/html/head/meta[@name='programid']")
     urlSlashSplit = url.split("/")
     seriesName = urlSlashSplit[len(urlSlashSplit)-1]
-    
+
     seasons = html.xpath("//a[@class='buttonbar-link ga season-link']")
     #Log.Debug("Seasons: " + str(seasons))
     titles = []
@@ -89,7 +89,7 @@ def GetSeasons(url):
         fanarts.append(FanartURL(url))
         thumbs.append(ThumbURL(url))
         summaries.append('')
-    
+
     return titles, urls, thumbs, fanarts, summaries
 
 def GetEpisodes(url):
@@ -118,5 +118,5 @@ def GetEpisodes(url):
             fanarts.append(FanartURL(epUrl.replace(BASE_URL, '')))
             thumbs.append(ThumbURL(epUrl.replace(BASE_URL, '')))
             summaries.append(episode.xpath('./a/div/p[@class="description"]/span/text()')[0])
-    
+
     return titles, urls, thumbs, fanarts, summaries

@@ -5,14 +5,14 @@ Plex plugin for all NRK content (tv.nrk.no, radio.nrk.no etc.)
 
 ============
 
-State of this project as of February 2014:
-Beta. Getting ready to submit to Plex app store.
+State of this project as of October 2014:
+Quite stable and available from the Plex App Store.
 Maintainers are struggling to find time to work on this between kids & family, so please come forward if you want to contribute :)
 
 To stay up to date with the stuff we are working on, please visit the issues page:
 https://github.com/eithe/NRKTV.bundle/issues
 
-Installation: OSX (with git installed)
+Manual Installation: OSX (with git installed)
 ===============
 * Open a Terminal
 * Execute the following commands:
@@ -54,7 +54,7 @@ OSX (without git installed)
 To update the plugin.
 Redownload the zip file and replace the .bundle file found here: github/NRKTV.bundle
 
-Other OSs
+Manual Installation: Other OSs
 ===============
 Windows (without git installed)
 * Download zip file from here: https://github.com/eithe/NRKTV.bundle/archive/master.zip

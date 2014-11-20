@@ -17,7 +17,7 @@ VIDEO_PREFIX = "/video/nrktv"
 NAME = unicode(L('title'))
 
 BASE_URL = "http://tv.nrk.no"
-JSON_URL_MEDIAELEMENT = 'http://v7.psapi.nrk.no/mediaelement/%s'
+JSON_URL_MEDIAELEMENT = 'http://v8.psapi.nrk.no/mediaelement/%s'
 # make sure to replace artwork with what you want
 # these filenames reference the example files in
 # the Contents/Resources/ folder in the bundle
@@ -40,7 +40,7 @@ def emptyItem():
             title=unicode(L("empty_title")),
             summary=unicode(L("empty_description")),
             thumb='')
-            
+
 def JSONList(url):
     #Log.Debug("URL: " + url)
     if '/indexelements/' in url: #Get index
@@ -50,7 +50,7 @@ def JSONList(url):
     else:
         index = -1
         category = ''
-        
+
     titles = []
     urls = []
     thumbs = []
@@ -63,25 +63,28 @@ def JSONList(url):
         if index != -1: #No category
             for char in elems['characters']:
                 for e in char['elements']:
-                    #Log("Elems: " + str(e))
+                    if e['Url'] is not None:
+                        #Log("Elems: " + str(e))
+                        titles.append(e['Title'])
+                        urls.append(BASE_URL + e['Url'])
+                        thumbs.append(e['Images'][0]['ImageUrl'])
+                        fanarts.append(FanartURL(e['Url']))
+                        summaries.append(e['Title'])
+        else:
+            for e in elems:
+                if e['Url'] is not None:
                     titles.append(e['Title'])
                     urls.append(BASE_URL + e['Url'])
                     thumbs.append(e['Images'][0]['ImageUrl'])
                     fanarts.append(FanartURL(e['Url']))
                     summaries.append(e['Title'])
-        else:
-            titles = [ e['Title'] for e in elems ]
-            urls = [ BASE_URL + e['Url'] for e in elems ]
-            thumbs = [ e['Images'][0]['ImageUrl'] for e in elems ]
-            fanarts = [ FanartURL(e['Url']) for e in elems ]
-            summaries = [(e['Title']) for e in elems ]
     except:
         #e = sys.exc_info()[0]
         Log.Error("Error calling: %s." % url)
-    
+
     return titles, urls, thumbs, fanarts, summaries, index+1, category
-        
-def ProgramList(url):    
+
+def ProgramList(url):
     httpRequest = HTTP.Request(url = url, headers = {'X-Requested-With':'XMLHttpRequest'})
     #Log.Debug(httpRequest.content)
     items = JSON.ObjectFromString(httpRequest.content)
@@ -97,7 +100,7 @@ def ProgramList(url):
         thumbs.append(item['ImageUrl'])
         fanarts.append(FanartURL(url))
         summaries.append(item['Title'])
-  
+
     return titles, urls, thumbs, fanarts, summaries
 
 def FanartURL(url):
@@ -108,10 +111,10 @@ def FanartURL(url):
         fUrl = "http://nrk.eu01.aws.af.cm/f/%s" % fUrl.split('/')[3]
     else:
         fUrl = ''
-    
-    #Log.Debug("FANART URL: " + fUrl)    
+
+    #Log.Debug("FANART URL: " + fUrl)
     return fUrl
-    
+
 def ThumbURL(url):
     tUrl = url.replace(BASE_URL, '')
     if '/Episodes/' in url:
@@ -124,7 +127,7 @@ def ThumbURL(url):
 
 def GetSummary(url):
     return ''
-    
+
 # Too slow at the moment. Needs caching
 def GetProgramInfo(url):
     matchObj = RE_PROG_INFO.search(url)

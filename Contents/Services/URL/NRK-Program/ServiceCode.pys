@@ -17,7 +17,7 @@ RE_KEY_URI = Regex('URI *= *"(.*)"')
 USER_AGENT = 'AppleCoreMedia/1.0.0.11A501 (iPad; U; CPU OS 7_0_2 like Mac OS X; en_us)'
 THUMB_URL = "http://nrk.eu01.aws.af.cm/t/%s"
 FANART_URL = "http://nrk.eu01.aws.af.cm/f/%s"
-API_META_URL = "http://v7.psapi.nrk.no/mediaelement/%s"
+API_META_URL = "http://v8.psapi.nrk.no/mediaelement/%s"
 RE_VIDEO_ID = Regex('\w{4}\d{8}')
 
 USERAGENT_FOR_CLIENTS = (
@@ -49,14 +49,14 @@ def MetadataObjectForURL(url):
     else:
         thumb = THUMB_URL % response['relativeOriginUrl']
         fanart = FANART_URL % response['relativeOriginUrl']
-        
+
     #Log.Debug('MetadataObjectForURL: ' + title)
     return VideoClipObject(
         title = title,
         summary = summary,
         thumb = thumb,
         art = fanart)
-    
+
 def MediaObjectsForURL(url):
     searchObj = RE_VIDEO_ID.search(url)
     if searchObj:
@@ -74,16 +74,16 @@ def MediaObjectsForURL(url):
                             ]
                     )
                 ]
-    
+
 def PlayVideo(video_id):
     mediaMetadataUrl = API_META_URL % video_id
     user_agent = "Mozilla/5.0 (iPad; U; CPU OS 3_2 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) Version/4.0.4 Mobile/7B334b Safari/531.21.10"
-    
+
     if Client.Platform in USERAGENT_FOR_CLIENTS:
         user_agent = USERAGENT_FOR_CLIENTS[Client.Platform]
-        
+
     video_url = JSON.ObjectFromURL(mediaMetadataUrl, headers={'User-Agent': user_agent})['mediaUrl']
-    
+
     streams = GetHLSStreams(video_url)
 
     if Client.Platform in SSL_CAPABLE_CLIENTS:
@@ -97,7 +97,7 @@ def GetHLSStreams(url):
 
     playList = HTTP.Request(url).content
     #Log.Debug("M3U8: " + playList)
-    
+
     stream = {}
     # Parse the m3u8 file to get:
     # - URL
@@ -107,19 +107,19 @@ def GetHLSStreams(url):
         if "BANDWIDTH" in line:
             stream            = {}
             stream["bitrate"] = int(Regex('(?<=BANDWIDTH=)[0-9]+').search(line).group(0))
-		
+
         elif line.startswith("#"):
             pass
-		
+
         elif ".m3u8" in line:
             path = ''
             if not line.startswith("http"):
                 path = url[ : url.rfind('/') + 1]
-			
+
             stream["url"] = path + line
             streams.append(stream)
-                
-    sorted_streams = sorted(streams, key = lambda stream: stream["bitrate"], reverse = True)        
+
+    sorted_streams = sorted(streams, key = lambda stream: stream["bitrate"], reverse = True)
 
     return sorted_streams
 
@@ -143,12 +143,12 @@ def CreatePatchedPlaylist(url, cookies):
             new_playlist = new_playlist + new_segment_url + '\n'
         else:
             new_playlist = new_playlist + line + '\n'
-    
+
     return new_playlist
 
 def ContentOfURL(url, cookies):
     headers               = {}
     headers['Cookie']     = cookies
     headers['User-Agent'] = USER_AGENT
-    
+
     return HTTP.Request(url, cacheTime = 0).content
