@@ -16,6 +16,7 @@ from util import *
 
 PROGRAM_URL = Regex('\/program\/([^\/]+)')
 PROGRAM_LETTER_BASE_URL = BASE_URL + '/programmer/%s'
+PROGRAM_CATEGORY_ROOT_URL = BASE_URL + '/programmer/'
 PROGRAM_CATEGORY_BASE_URL = BASE_URL + '/programmer/%s'
 PROGRAM_CATEGORY_LETTER_BASE_URL = PROGRAM_CATEGORY_BASE_URL + '/%s'
 PROGRAM_SEASON_URL = BASE_URL + "/program/Episodes/%s/%s/%s" #"/program/Episodes/schrodingers-katt/22493/dmpv73000114"
@@ -49,12 +50,16 @@ def GetByLetter(letterUrl):
     return ProgramList(PROGRAM_LETTER_BASE_URL % letterUrl)
 
 def GetCategories():
-  titles = [ "Barn", "Dokumentar og fakta", "Filmer og serier", "Helse, forbruker og livsstil",
-    "Kultur og underholdning", "Nyheter", "Samisk", "Sport", "Tegnspråk" ]
-  urls = [ PROGRAM_CATEGORY_BASE_URL % "barn", PROGRAM_CATEGORY_BASE_URL % "dokumentar-og-fakta", PROGRAM_CATEGORY_BASE_URL % "filmer-og-serier", PROGRAM_CATEGORY_BASE_URL % "helse-forbruker-og-livsstil",
-    PROGRAM_CATEGORY_BASE_URL % "kultur-og-underholdning", PROGRAM_CATEGORY_BASE_URL % "nyheter", PROGRAM_CATEGORY_BASE_URL % "samisk", PROGRAM_CATEGORY_BASE_URL % "sport", PROGRAM_CATEGORY_BASE_URL % "tegnspraak" ]
+    html = HTML.ElementFromURL(PROGRAM_CATEGORY_ROOT_URL)
+    categories = html.xpath("//*[@id='main']//li/a[@class='buttonbar-link hidden-phone']")
 
-  return titles, urls
+    titles = []
+    urls = []
+    for category in categories:
+        titles.append(category.xpath('./text()')[0])
+        urls.append(BASE_URL + category.get('href'))
+
+    return titles, urls
 
 def GetByCategory(category, index):
     return JSONList(JSON_URL_CATEGORY % (category, index))
