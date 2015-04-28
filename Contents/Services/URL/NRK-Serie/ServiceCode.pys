@@ -65,6 +65,8 @@ def MediaObjectsForURL(url):
                     video_resolution = 720,
                     optimized_for_streaming = True,
                     audio_channels = 2,
+                    container = Container.MP4,
+                    video_codec = VideoCodec.H264,
                     parts = [
                             PartObject(
                                     key = HTTPLiveStreamURL(Callback(PlayVideo, video_id = video_id))
