@@ -51,7 +51,7 @@ def GetByLetter(letterUrl):
 
 def GetCategories():
     html = HTML.ElementFromURL(PROGRAM_CATEGORY_ROOT_URL)
-    categories = html.xpath("//*[@id='main']//li/a[@class='buttonbar-link hidden-phone']")
+    categories = html.xpath("//a[@class='hidden-phone']")
 
     titles = []
     urls = []
@@ -74,14 +74,14 @@ def GetMostPopularMonth():
     return JSONList(JSON_URL_POPULAR_MONTH)
 
 def GetSeasons(url):
-    Log.Debug("GetSeasons URL: " + url)
+    #Log.Debug("GetSeasons URL: " + url)
     html = HTML.ElementFromURL(url)
 
     programId = html.xpath("/html/head/meta[@name='programid']")
     urlSlashSplit = url.split("/")
     seriesName = urlSlashSplit[len(urlSlashSplit)-1]
 
-    seasons = html.xpath("//a[@class='buttonbar-link ga season-link']")
+    seasons = html.xpath("//a[@class='ga season-link']")
     #Log.Debug("Seasons: " + str(seasons))
     titles = []
     urls = []

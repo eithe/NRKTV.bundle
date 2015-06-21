@@ -58,26 +58,26 @@ def JSONList(url):
     summaries = []
 
     try:
-        elems = JSON.ObjectFromURL(url)['Data']
+        elems = JSON.ObjectFromURL(url)['data']
 
         if index != -1: #No category
             for char in elems['characters']:
                 for e in char['elements']:
-                    if e['Url'] is not None:
+                    if e['url'] is not None:
                         #Log("Elems: " + str(e))
-                        titles.append(e['Title'])
-                        urls.append(BASE_URL + e['Url'])
-                        thumbs.append(e['Images'][0]['ImageUrl'])
-                        fanarts.append(FanartURL(e['Url']))
-                        summaries.append(e['Title'])
+                        titles.append(e['title'])
+                        urls.append(BASE_URL + e['url'])
+                        thumbs.append(e['images'][0]['imageUrl'])
+                        fanarts.append(FanartURL(e['url']))
+                        summaries.append(e['title'])
         else:
             for e in elems:
-                if e['Url'] is not None:
-                    titles.append(e['Title'])
-                    urls.append(BASE_URL + e['Url'])
-                    thumbs.append(e['Images'][0]['ImageUrl'])
-                    fanarts.append(FanartURL(e['Url']))
-                    summaries.append(e['Title'])
+                if e['url'] is not None:
+                    titles.append(e['title'])
+                    urls.append(BASE_URL + e['url'])
+                    thumbs.append(e['images'][0]['imageUrl'])
+                    fanarts.append(FanartURL(e['url']))
+                    summaries.append(e['title'])
     except:
         #e = sys.exc_info()[0]
         Log.Error("Error calling: %s." % url)
@@ -95,11 +95,11 @@ def ProgramList(url):
     fanarts = []
     summaries = []
     for item in items:
-        titles.append(item['Title'])
-        urls.append(BASE_URL + item['Url'])
-        thumbs.append(item['ImageUrl'])
+        titles.append(item['title'])
+        urls.append(BASE_URL + item['url'])
+        thumbs.append(item['imageUrl'])
         fanarts.append(FanartURL(url))
-        summaries.append(item['Title'])
+        summaries.append(item['title'])
 
     return titles, urls, thumbs, fanarts, summaries
 
